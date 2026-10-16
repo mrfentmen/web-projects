@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serena — Luxury Resort & Spa</title>
+<style>
+  :root { --bg:#0c1218; --fg:#f0ece3; --muted:#9a9488; --accent:#c9a96e; --dark:#060a0e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Cormorant Garamond", "Georgia", serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Loader */
+  .loader { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity .8s, visibility .8s; }
+  .loader.hidden { opacity: 0; visibility: hidden; }
+  .loader-text { font-size: 14px; letter-spacing: 8px; text-transform: uppercase; color: var(--accent); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: .3; } 50% { opacity: 1; } }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 32px 56px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo { font-size: 22px; font-weight: 300; letter-spacing: 6px; }
+  .nav-links { display: flex; gap: 40px; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; font-family: "Inter", sans-serif; }
+  .nav-links a { opacity: .8; transition: opacity .3s; }
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+  .nav-cta { padding: 12px 28px; border: 1px solid var(--accent); color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 3px; font-family: "Inter", sans-serif; transition: all .3s; }
+  .nav-cta:hover { background: var(--accent); color: var(--bg); }
+
+  /* Hero */
+  .hero { height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .hero-bg { position: absolute; inset: -20% 0; will-change: transform; }
+  .hero-bg img { filter: brightness(.6) saturate(1.1); }
+  .hero-overlay { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 0%, rgba(12,18,24,.6) 100%); }
+  .hero-content { text-align: center; position: relative; z-index: 2; }
+  .hero-eyebrow { font-family: "Inter", sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 32px; opacity: 0; animation: fadeUp 1.2s .4s forwards; }
+  .hero h1 { font-size: clamp(60px, 11vw, 150px); font-weight: 300; line-height: .95; letter-spacing: -2px; }
+  .hero h1 .line { display: block; overflow: hidden; }
+  .hero h1 .line span { display: inline-block; transform: translateY(110%); animation: reveal 1.3s cubic-bezier(.2,.8,.2,1) forwards; }
+  .hero h1 .line:nth-child(2) span { animation-delay: .25s; font-style: italic; }
+  @keyframes reveal { to { transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-sub { font-family: "Inter", sans-serif; color: var(--muted); font-size: 15px; margin-top: 32px; letter-spacing: 1px; opacity: 0; animation: fadeUp 1.2s .9s forwards; }
+  .hero-scroll { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); font-family: "Inter", sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 4px; color: var(--muted); z-index: 2; }
+  .hero-scroll::after { content: ""; display: block; width: 1px; height: 50px; background: var(--accent); margin: 16px auto 0; animation: grow 2s infinite; transform-origin: top; }
+  @keyframes grow { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+  /* Intro */
+  .intro { padding: 160px 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+  .intro-img { height: 600px; position: relative; overflow: hidden; }
+  .intro-img img { transition: transform .8s; }
+  .intro-img:hover img { transform: scale(1.05); }
+  .intro-img::before { content: ""; position: absolute; top: -20px; left: -20px; width: 100%; height: 100%; border: 1px solid var(--accent); z-index: -1; }
+  .intro-text .eyebrow { font-family: "Inter", sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 4px; color: var(--accent); margin-bottom: 24px; }
+  .intro-text h2 { font-size: clamp(36px, 4.5vw, 60px); font-weight: 300; line-height: 1.1; margin-bottom: 24px; }
+  .intro-text h2 em { font-style: italic; color: var(--accent); }
+  .intro-text p { color: var(--muted); line-height: 1.8; font-size: 17px; margin-bottom: 32px; }
+
+  /* Parallax banner */
+  .parallax-banner { height: 80vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .parallax-banner .bg { position: absolute; inset: -25% 0; will-change: transform; }
+  .parallax-banner .bg img { filter: brightness(.5) saturate(1.2); }
+  .parallax-banner .content { text-align: center; position: relative; z-index: 2; }
+  .parallax-banner .content h2 { font-size: clamp(40px, 7vw, 90px); font-weight: 300; line-height: 1.05; }
+  .parallax-banner .content h2 em { font-style: italic; color: var(--accent); }
+  .parallax-banner .content p { font-family: "Inter", sans-serif; color: var(--muted); margin-top: 20px; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Rooms */
+  .rooms { padding: 140px 56px; }
+  .rooms-header { margin-bottom: 64px; display: flex; justify-content: space-between; align-items: end; }
+  .rooms-header h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 300; }
+  .rooms-header .hint { font-family: "Inter", sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); }
+  .rooms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .room-card { position: relative; overflow: hidden; }
+  .room-card .img { height: 480px; }
+  .room-card .img img { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .room-card:hover .img img { transform: scale(1.08); }
+  .room-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(12,18,24,.85) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 32px; }
+  .room-card .name { font-size: 32px; font-weight: 300; margin-bottom: 8px; }
+  .room-card .meta { font-family: "Inter", sans-serif; font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+  .room-card .price { position: absolute; top: 24px; right: 24px; background: var(--accent); color: var(--bg); padding: 8px 16px; font-family: "Inter", sans-serif; font-size: 12px; letter-spacing: 1px; }
+
+  /* Amenities */
+  .amenities { padding: 120px 56px; background: var(--dark); }
+  .amenities-header { text-align: center; margin-bottom: 64px; }
+  .amenities-header h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 300; }
+  .amenities-header p { color: var(--muted); margin-top: 16px; font-size: 16px; }
+  .amenities-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .amenity { text-align: center; padding: 40px 20px; border: 1px solid #1a2230; transition: border-color .3s, transform .3s; }
+  .amenity:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .amenity .icon { font-size: 32px; margin-bottom: 16px; color: var(--accent); }
+  .amenity h4 { font-size: 20px; font-weight: 400; margin-bottom: 8px; }
+  .amenity p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+  /* Testimonial */
+  .testimonial { padding: 160px 56px; text-align: center; }
+  .testimonial .quote { font-size: clamp(24px, 3.5vw, 44px); font-style: italic; font-weight: 300; line-height: 1.3; max-width: 900px; margin: 0 auto 32px; }
+  .testimonial .quote::before { content: '"'; color: var(--accent); font-size: 1.5em; vertical-align: -0.2em; }
+  .testimonial .author { font-family: "Inter", sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); }
+
+  /* Booking CTA */
+  .booking { padding: 120px 56px; text-align: center; background: linear-gradient(180deg, var(--bg) 0%, var(--dark) 100%); }
+  .booking h2 { font-size: clamp(40px, 6vw, 80px); font-weight: 300; margin-bottom: 24px; }
+  .booking h2 em { font-style: italic; color: var(--accent); }
+  .booking p { color: var(--muted); margin-bottom: 40px; font-size: 17px; }
+  .booking-form { display: flex; gap: 0; max-width: 700px; margin: 0 auto; border: 1px solid #2a3444; }
+  .booking-form input { flex: 1; background: transparent; border: none; padding: 18px 24px; color: var(--fg); font-family: "Inter", sans-serif; font-size: 14px; outline: none; }
+  .booking-form button { background: var(--accent); border: none; padding: 18px 32px; color: var(--bg); font-family: "Inter", sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: background .3s; }
+  .booking-form button:hover { background: #d9b97e; }
+
+  footer { padding: 48px 56px; border-top: 1px solid #1a2230; display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; font-family: "Inter", sans-serif; }
+
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s, transform 1s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity: 0; transform: translateX(-50px); transition: opacity 1s, transform 1s; }
+  .reveal-left.in { opacity: 1; transform: translateX(0); }
+
+  @media (max-width: 900px) {
+    .intro { grid-template-columns: 1fr; gap: 40px; padding: 100px 24px; }
+    .rooms-grid { grid-template-columns: 1fr; }
+    .amenities-grid { grid-template-columns: 1fr 1fr; }
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .booking-form { flex-direction: column; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader-text">Serena</div></div>
+
+<nav>
+  <div class="logo">SERENA</div>
+  <div class="nav-links">
+    <a href="#rooms">Suites</a>
+    <a href="#amenities">Spa</a>
+    <a href="#dining">Dining</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#booking" class="nav-cta">Book now</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg parallax-bg">
+    <img src="https://picsum.photos/seed/serena-hero/1920/1080" alt="Resort">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Luxury Resort & Spa · Maldives</div>
+    <h1>
+      <span class="line"><span>Where the ocean</span></span>
+      <span class="line"><span>meets the sky.</span></span>
+    </h1>
+    <p class="hero-sub">An island sanctuary. 42 private villas. Endless horizon.</p>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- Intro -->
+<section class="intro">
+  <div class="intro-img reveal-left">
+    <img src="https://picsum.photos/seed/serena-intro/800/900" alt="Villa">
+  </div>
+  <div class="intro-text reveal">
+    <div class="eyebrow">Welcome to Serena</div>
+    <h2>A <em>sanctuary</em> above the sea.</h2>
+    <p>Perched on a private atoll in the Maldives, Serena offers an escape from the everyday. Each villa is designed to dissolve the boundary between indoors and the natural world.</p>
+    <p>Wake to the sound of waves. Dine under the stars. Restore in our overwater spa. This is where time slows down.</p>
+    <a href="#rooms" style="display:inline-block;padding:14px 32px;border:1px solid var(--fg);font-family:'Inter',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:2px;transition:all .3s;" onmouseover="this.style.background='var(--fg)';this.style.color='var(--bg)'" onmouseout="this.style.background='transparent';this.style.color='var(--fg)'">Explore suites</a>
+  </div>
+</section>
+
+<!-- Parallax banner -->
+<section class="parallax-banner">
+  <div class="bg parallax-bg">
+    <img src="https://picsum.photos/seed/serena-banner/1920/1080" alt="Ocean">
+  </div>
+  <div class="content reveal">
+    <h2>Stillness is the <em>new luxury.</em></h2>
+    <p>4° North · 73° East · Indian Ocean</p>
+  </div>
+</section>
+
+<!-- Rooms -->
+<section class="rooms" id="rooms">
+  <div class="rooms-header">
+    <h2 class="reveal">Suites & Villas</h2>
+    <div class="hint reveal">Hover to explore</div>
+  </div>
+  <div class="rooms-grid">
+    <div class="room-card reveal">
+      <div class="img"><img src="https://picsum.photos/seed/serena-r1/800/600" alt="Villa"></div>
+      <div class="price">From $1,200/night</div>
+      <div class="overlay">
+        <div class="name">Overwater Villa</div>
+        <div class="meta">120 m² · Private pool · Ocean view</div>
+      </div>
+    </div>
+    <div class="room-card reveal">
+      <div class="img"><img src="https://picsum.photos/seed/serena-r2/800/600" alt="Villa"></div>
+      <div class="price">From $2,400/night</div>
+      <div class="overlay">
+        <div class="name">Beach Residence</div>
+        <div class="meta">280 m² · 2 bedrooms · Private beach</div>
+      </div>
+    </div>
+    <div class="room-card reveal">
+      <div class="img"><img src="https://picsum.photos/seed/serena-r3/800/600" alt="Villa"></div>
+      <div class="price">From $4,800/night</div>
+      <div class="overlay">
+        <div class="name">Presidential Suite</div>
+        <div class="meta">450 m² · 3 bedrooms · Butler service</div>
+      </div>
+    </div>
+    <div class="room-card reveal">
+      <div class="img"><img src="https://picsum.photos/seed/serena-r4/800/600" alt="Villa"></div>
+      <div class="price">From $900/night</div>
+      <div class="overlay">
+        <div class="name">Garden Villa</div>
+        <div class="meta">95 m² · Tropical garden · Plunge pool</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Amenities -->
+<section class="amenities" id="amenities">
+  <div class="amenities-header reveal">
+    <h2>Experiences</h2>
+    <p>Everything you need to disconnect and reconnect.</p>
+  </div>
+  <div class="amenities-grid">
+    <div class="amenity reveal"><div class="icon">✦</div><h4>Overwater Spa</h4><p>Traditional therapies and modern wellness in glass-floored treatment rooms.</p></div>
+    <div class="amenity reveal"><div class="icon">◇</div><h4>Fine Dining</h4><p>Three restaurants. Local seafood. Michelin-starred chef.</p></div>
+    <div class="amenity reveal"><div class="icon">○</div><h4>Diving & Snorkel</h4><p>House reef with 200+ species. PADI-certified instructors.</p></div>
+    <div class="amenity reveal"><div class="icon">△</div><h4>Yoga Pavilion</h4><p>Sunrise sessions over the water. Private instructors available.</p></div>
+  </div>
+</section>
+
+<!-- Testimonial -->
+<section class="testimonial">
+  <p class="quote reveal">Serena is the closest thing to paradise I've ever experienced. We didn't want to leave.</p>
+  <div class="author reveal">— Condé Nast Traveler</div>
+</section>
+
+<!-- Booking -->
+<section class="booking" id="booking">
+  <h2 class="reveal">Begin your <em>escape.</em></h2>
+  <p class="reveal">Reserve your villa and let us take care of the rest.</p>
+  <form class="booking-form reveal" onsubmit="event.preventDefault(); alert('Thank you! We\'ll be in touch.');">
+    <input type="text" placeholder="Check-in date" required>
+    <input type="text" placeholder="Check-out date" required>
+    <input type="number" placeholder="Guests" min="1" required>
+    <button type="submit">Check availability</button>
+  </form>
+</section>
+
+<footer>
+  <div>© 2026 Serena Resort. All rights reserved.</div>
+  <div>Maldives · +960 664 0000 · reservations@serena.mv</div>
+</footer>
+
+<script>
+// Loader
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 100);
+});
+
+// Parallax
+const parallaxEls = document.querySelectorAll('.parallax-bg, .bg');
+function updateParallax() {
+  const y = window.scrollY;
+  parallaxEls.forEach(el => {
+    const parent = el.parentElement;
+    const rect = parent.getBoundingClientRect();
+    const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+    el.style.transform = `translateY(${center * 0.25}px)`;
+  });
+}
+window.addEventListener('scroll', updateParallax, { passive: true });
+updateParallax();
+
+// Reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal, .reveal-left').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

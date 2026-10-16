@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synth — Music & Audio</title>
+<style>
+  :root { --bg:#08080c; --fg:#f0f0f5; --muted:#7a7a8a; --accent:#ff3366; --accent2:#00d4ff; --accent3:#ffcc00; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  /* Animated gradient bg */
+  .grad-bg { position:fixed; inset:0; z-index:0; background:linear-gradient(135deg,#08080c 0%,#1a0a1e 25%,#0a1a2e 50%,#1e0a1a 75%,#08080c 100%); background-size:400% 400%; animation:gradMove 15s ease infinite; }
+  @keyframes gradMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:24px 48px; display:flex; justify-content:space-between; align-items:center; }
+  .logo { font-weight:900; font-size:22px; letter-spacing:-1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+
+  /* Hero with equalizer */
+  .hero { min-height:100vh; position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:0 24px; z-index:1; overflow:hidden; }
+  .eq-container { position:absolute; bottom:0; left:0; right:0; height:40vh; display:flex; align-items:flex-end; justify-content:center; gap:4px; padding:0 48px; opacity:.25; }
+  .eq-bar { width:8px; background:linear-gradient(180deg,var(--accent),var(--accent2)); border-radius:4px 4px 0 0; animation:eq 1.2s ease-in-out infinite; }
+  @keyframes eq { 0%,100%{height:20%} 50%{height:100%} }
+  .hero h1 { font-size:clamp(64px,12vw,180px); font-weight:900; line-height:.85; letter-spacing:-5px; position:relative; z-index:2; }
+  .hero h1 .grad { background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--muted); font-size:18px; max-width:560px; margin:24px auto 0; position:relative; z-index:2; }
+  .hero-cta { margin-top:40px; display:flex; gap:16px; position:relative; z-index:2; }
+  .btn { padding:14px 32px; border:1px solid rgba(255,255,255,.2); font-size:13px; text-transform:uppercase; letter-spacing:2px; transition:all .3s; }
+  .btn:hover { background:var(--fg); color:var(--bg); }
+  .btn.filled { background:var(--accent); border:none; color:#fff; }
+  .waveform { position:absolute; top:50%; left:0; right:0; height:120px; transform:translateY(-50%); opacity:.15; z-index:1; }
+
+  /* Now playing card */
+  .now-playing { position:fixed; bottom:24px; right:24px; z-index:50; background:rgba(8,8,12,.8); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:16px; display:flex; align-items:center; gap:12px; width:280px; }
+  .np-art { width:48px; height:48px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--accent2)); animation:spin 8s linear infinite; }
+  .np-info { flex:1; }
+  .np-title { font-size:13px; font-weight:600; }
+  .np-artist { font-size:11px; color:var(--muted); margin-top:2px; }
+  .np-bars { display:flex; gap:2px; align-items:flex-end; height:24px; }
+  .np-bar { width:3px; background:var(--accent); border-radius:2px; animation:eq 1s ease-in-out infinite; }
+  .np-bar:nth-child(2){animation-delay:.1s;} .np-bar:nth-child(3){animation-delay:.2s;} .np-bar:nth-child(4){animation-delay:.3s;} .np-bar:nth-child(5){animation-delay:.4s;}
+
+  /* Tracks */
+  .tracks { padding:120px 48px; position:relative; z-index:1; }
+  .tracks h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .track-list { max-width:900px; }
+  .track { display:grid; grid-template-columns:60px 1fr auto; gap:24px; align-items:center; padding:20px 0; border-bottom:1px solid rgba(255,255,255,.06); transition:background .2s; cursor:pointer; }
+  .track:hover { background:rgba(255,255,255,.02); }
+  .track .num { font-size:24px; font-weight:900; color:var(--muted); }
+  .track .info .title { font-size:18px; font-weight:600; }
+  .track .info .artist { color:var(--muted); font-size:13px; margin-top:2px; }
+  .track .dur { color:var(--muted); font-size:13px; }
+  .track .play { width:40px; height:40px; border-radius:50%; border:1px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:center; transition:all .2s; }
+  .track:hover .play { background:var(--accent); border-color:var(--accent); }
+  .track .play svg { width:14px; height:14px; fill:currentColor; margin-left:2px; }
+
+  /* Visualizer */
+  .viz { padding:80px 48px; position:relative; z-index:1; }
+  .viz h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:40px; }
+  .viz-container { height:200px; display:flex; align-items:flex-end; justify-content:center; gap:3px; }
+  .viz-bar { flex:1; max-width:8px; background:linear-gradient(180deg,var(--accent),var(--accent2)); border-radius:4px 4px 0 0; animation:viz 1.5s ease-in-out infinite; }
+  @keyframes viz { 0%,100%{height:10%} 25%{height:60%} 50%{height:90%} 75%{height:40%} }
+
+  /* Artists */
+  .artists { padding:120px 48px; position:relative; z-index:1; }
+  .artists h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .artist-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+  .artist { position:relative; overflow:hidden; border-radius:12px; aspect-ratio:3/4; }
+  .artist img { width:100%; height:100%; object-fit:cover; transition:transform .6s; filter:grayscale(.3); }
+  .artist:hover img { transform:scale(1.08); filter:grayscale(0); }
+  .artist .overlay { position:absolute; inset:0; background:linear-gradient(180deg,transparent 50%,rgba(8,8,12,.9) 100%); display:flex; flex-direction:column; justify-content:flex-end; padding:20px; }
+  .artist .name { font-size:18px; font-weight:700; }
+  .artist .genre { color:var(--muted); font-size:12px; margin-top:2px; }
+
+  /* CTA */
+  .cta { padding:140px 48px; text-align:center; position:relative; z-index:1; }
+  .cta h2 { font-size:clamp(48px,8vw,110px); font-weight:900; letter-spacing:-3px; line-height:.9; margin-bottom:24px; }
+  .cta h2 .grad { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .cta p { color:var(--muted); font-size:18px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:var(--accent); color:#fff; font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:600; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:40px 48px; border-top:1px solid rgba(255,255,255,.06); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; position:relative; z-index:1; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  @media(max-width:900px){ .artist-grid{grid-template-columns:1fr 1fr;} .track{grid-template-columns:40px 1fr auto;} nav{padding:20px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<div class="grad-bg"></div>
+
+<nav>
+  <div class="logo">SYN<span>TH</span></div>
+  <div class="nav-links">
+    <a href="#tracks">Tracks</a>
+    <a href="#artists">Artists</a>
+    <a href="#visualizer">Visualizer</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="eq-container" id="eq"></div>
+  <h1>Feel the <span class="grad">bass.</span></h1>
+  <p class="hero-sub">A music collective pushing the boundaries of sound. Electronic, experimental, and everything in between.</p>
+  <div class="hero-cta">
+    <a href="#tracks" class="btn filled">Listen now</a>
+    <a href="#artists" class="btn">Our artists</a>
+  </div>
+</section>
+
+<section class="tracks" id="tracks">
+  <h2 class="reveal">Latest releases</h2>
+  <div class="track-list">
+    <div class="track reveal">
+      <div class="num">01</div>
+      <div class="info"><div class="title">Midnight Pulse</div><div class="artist">Nova Wave</div></div>
+      <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="dur">3:42</div>
+    </div>
+    <div class="track reveal">
+      <div class="num">02</div>
+      <div class="info"><div class="title">Neon Dreams</div><div class="artist">Luna Echo</div></div>
+      <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="dur">4:15</div>
+    </div>
+    <div class="track reveal">
+      <div class="num">03</div>
+      <div class="info"><div class="title">Electric Soul</div><div class="artist">Bass Theory</div></div>
+      <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="dur">3:58</div>
+    </div>
+    <div class="track reveal">
+      <div class="num">04</div>
+      <div class="info"><div class="title">Cosmic Drift</div><div class="artist">Starlight</div></div>
+      <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div class="dur">5:21</div>
+    </div>
+  </div>
+</section>
+
+<section class="viz" id="visualizer">
+  <h2 class="reveal">Live visualizer</h2>
+  <div class="viz-container" id="viz"></div>
+</section>
+
+<section class="artists">
+  <h2 class="reveal">Our artists</h2>
+  <div class="artist-grid">
+    <div class="artist reveal"><img src="https://picsum.photos/seed/synth-a1/400/533" alt=""><div class="overlay"><div class="name">Nova Wave</div><div class="genre">Electronic</div></div></div>
+    <div class="artist reveal"><img src="https://picsum.photos/seed/synth-a2/400/533" alt=""><div class="overlay"><div class="name">Luna Echo</div><div class="genre">Ambient</div></div></div>
+    <div class="artist reveal"><img src="https://picsum.photos/seed/synth-a3/400/533" alt=""><div class="overlay"><div class="name">Bass Theory</div><div class="genre">Bass</div></div></div>
+    <div class="artist reveal"><img src="https://picsum.photos/seed/synth-a4/400/533" alt=""><div class="overlay"><div class="name">Starlight</div><div class="genre">Synthwave</div></div></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="reveal">Join the <span class="grad">sound.</span></h2>
+  <p class="reveal">Bookings, collaborations, and inquiries.</p>
+  <a href="mailto:hello@synth.music" class="btn2 reveal">Get in touch →</a>
+</section>
+
+<footer>
+  <div>© 2026 Synth Music Collective. All rights reserved.</div>
+  <div>hello@synth.music · LA · NYC · London</div>
+</footer>
+
+<div class="now-playing">
+  <div class="np-art"></div>
+  <div class="np-info">
+    <div class="np-title">Midnight Pulse</div>
+    <div class="np-artist">Nova Wave</div>
+  </div>
+  <div class="np-bars">
+    <div class="np-bar" style="height:60%"></div>
+    <div class="np-bar" style="height:80%"></div>
+    <div class="np-bar" style="height:45%"></div>
+    <div class="np-bar" style="height:70%"></div>
+    <div class="np-bar" style="height:55%"></div>
+  </div>
+</div>
+
+<script>
+// Equalizer bars
+const eq = document.getElementById('eq');
+for(let i=0;i<60;i++){
+  const bar = document.createElement('div');
+  bar.className = 'eq-bar';
+  bar.style.animationDelay = (Math.random()*1.2)+'s';
+  bar.style.height = (20+Math.random()*60)+'%';
+  eq.appendChild(bar);
+}
+
+// Visualizer bars
+const viz = document.getElementById('viz');
+for(let i=0;i<80;i++){
+  const bar = document.createElement('div');
+  bar.className = 'viz-bar';
+  bar.style.animationDelay = (Math.random()*1.5)+'s';
+  bar.style.animationDuration = (1+Math.random())+'s';
+  viz.appendChild(bar);
+}
+
+// Scroll reveal
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
