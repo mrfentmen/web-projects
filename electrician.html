@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voltex — Electrical Services</title>
+<style>
+  :root { --bg:#0a0e1a; --fg:#e8ecf4; --muted:#8a95a8; --accent:#f5c518; --accent2:#3b82f6; --card:#111827; --line:#1e293b; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(10,14,26,.95); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .logo { font-weight:800; font-size:20px; letter-spacing:1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:28px; font-size:13px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-cta { background:var(--accent); color:#000; padding:10px 20px; font-size:13px; font-weight:700; }
+
+  /* Hero with animated lightning */
+  .hero { min-height:90vh; position:relative; overflow:hidden; display:flex; align-items:center; padding:0 48px; }
+  .hero-bg { position:absolute; inset:0; opacity:.3; }
+  .hero-bg img { filter:brightness(.35) saturate(.5); }
+  .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,var(--bg) 0%,rgba(10,14,26,.7) 50%,transparent 100%); }
+  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px); background-size:60px 60px; opacity:.2; }
+  .hero-content { position:relative; z-index:2; max-width:640px; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(245,197,24,.12); border:1px solid var(--accent); color:var(--accent); padding:6px 14px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:24px; }
+  .hero h1 { font-size:clamp(36px,6vw,68px); font-weight:800; line-height:1.05; letter-spacing:-1.5px; margin-bottom:20px; }
+  .hero h1 span { color:var(--accent); }
+  .hero p { color:var(--muted); font-size:17px; margin-bottom:32px; line-height:1.6; }
+  .hero-cta { display:flex; gap:16px; flex-wrap:wrap; }
+  .btn { padding:14px 28px; font-size:14px; font-weight:600; transition:all .2s; display:inline-block; }
+  .btn.primary { background:var(--accent); color:#000; }
+  .btn.primary:hover { background:#f7d04a; }
+  .btn.ghost { border:1px solid var(--muted); color:var(--fg); }
+  .btn.ghost:hover { border-color:var(--fg); }
+  .hero-trust { margin-top:32px; display:flex; gap:24px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
+  .hero-trust span { display:flex; align-items:center; gap:6px; }
+
+  .services { padding:100px 48px; }
+  .services-header { text-align:center; margin-bottom:56px; }
+  .services-header .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; }
+  .services-header h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; }
+  .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .svc { background:var(--card); border:1px solid var(--line); padding:32px 24px; transition:transform .3s,border-color .3s; position:relative; overflow:hidden; }
+  .svc:hover { transform:translateY(-4px); border-color:var(--accent); }
+  .svc .icon { font-size:32px; margin-bottom:16px; }
+  .svc h3 { font-size:18px; font-weight:600; margin-bottom:8px; }
+  .svc p { color:var(--muted); font-size:13px; line-height:1.6; }
+  .svc .price { color:var(--accent); font-size:13px; font-weight:600; margin-top:12px; }
+  .svc::before { content:""; position:absolute; top:0; left:0; width:3px; height:0; background:var(--accent); transition:height .3s; }
+  .svc:hover::before { height:100%; }
+
+  .why { padding:100px 48px; background:var(--card); }
+  .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+  .why-img { height:420px; overflow:hidden; position:relative; }
+  .why-img img { transition:transform .7s; }
+  .why-img:hover img { transform:scale(1.05); }
+  .why-text h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:20px; }
+  .why-text h2 span { color:var(--accent); }
+  .why-text p { color:var(--muted); line-height:1.7; margin-bottom:20px; }
+  .why-list { list-style:none; }
+  .why-list li { padding:12px 0; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; font-size:14px; }
+  .why-list li::before { content:"⚡"; }
+
+  .parallax-banner { height:50vh; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .pb-bg { position:absolute; inset:-25% 0; will-change:transform; }
+  .pb-bg img { filter:brightness(.3) saturate(.6); }
+  .pb-content { text-align:center; position:relative; z-index:2; }
+  .pb-content h2 { font-size:clamp(32px,5vw,56px); font-weight:700; margin-bottom:12px; }
+  .pb-content p { color:var(--muted); font-size:16px; }
+
+  .reviews { padding:100px 48px; }
+  .reviews-header { text-align:center; margin-bottom:48px; }
+  .reviews-header h2 { font-size:clamp(30px,4vw,48px); font-weight:700; }
+  .review-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .review { background:var(--card); border:1px solid var(--line); padding:28px; }
+  .review .stars { color:var(--accent); margin-bottom:12px; letter-spacing:2px; }
+  .review .text { color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:16px; font-style:italic; }
+  .review .author { font-size:13px; font-weight:600; }
+
+  .cta { padding:100px 48px; text-align:center; background:linear-gradient(135deg,var(--accent),#d4a017); color:#000; }
+  .cta h2 { font-size:clamp(32px,5vw,56px); font-weight:700; margin-bottom:16px; }
+  .cta p { opacity:.85; margin-bottom:32px; font-size:16px; }
+  .cta .btn { background:#000; color:var(--accent); padding:14px 32px; font-weight:700; display:inline-block; }
+
+  footer { padding:32px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .svc-grid{grid-template-columns:1fr;} .why-grid{grid-template-columns:1fr;gap:40px;} .review-grid{grid-template-columns:1fr;} nav{padding:14px 24px;} .nav-links{display:none;} .hero{padding:0 24px;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VOL<span>TEX</span></div>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#why">Why us</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="tel:+15559876543" class="nav-cta">Call now</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"><img src="https://picsum.photos/seed/voltex-hero/1920/1080" alt="Electrician"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">⚡ Licensed Electricians · 20 Years</div>
+    <h1>Power your home. <span>Safely.</span></h1>
+    <p>Residential and commercial electrical services. Licensed, insured, and code-compliant. Same-day availability.</p>
+    <div class="hero-cta">
+      <a href="tel:+15559876543" class="btn primary">Call (555) 987-6543</a>
+      <a href="#services" class="btn ghost">Our services</a>
+    </div>
+    <div class="hero-trust">
+      <span>✓ Licensed</span><span>✓ Insured</span><span>✓ Code compliant</span><span>✓ Free estimates</span>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <div class="eyebrow">What we do</div>
+    <h2>Electrical services for home & business</h2>
+  </div>
+  <div class="svc-grid">
+    <div class="svc reveal"><div class="icon">🔌</div><h3>Outlet & Switch</h3><p>Installation, repair, and replacement of outlets and switches.</p><div class="price">From $79</div></div>
+    <div class="svc reveal"><div class="icon">💡</div><h3>Lighting</h3><p>Indoor, outdoor, and landscape lighting design & install.</p><div class="price">From $149</div></div>
+    <div class="svc reveal"><div class="icon">⚡</div><h3>Panel Upgrades</h3><p>Electrical panel upgrades and circuit breaker replacement.</p><div class="price">From $899</div></div>
+    <div class="svc reveal"><div class="icon">🏠</div><h3>Rewiring</h3><p>Full and partial home rewiring for older properties.</p><div class="price">Custom quote</div></div>
+    <div class="svc reveal"><div class="icon">🔋</div><h3>EV Chargers</h3><p>Level 2 EV charger installation for home or business.</p><div class="price">From $499</div></div>
+    <div class="svc reveal"><div class="icon">🚨</div><h3>Emergency</h3><p>24/7 emergency electrical service. Power outages, sparks, more.</p><div class="price">Call now</div></div>
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="why-grid">
+    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/voltex-why/800/600" alt="Electrician at work"></div>
+    <div class="why-text reveal-right">
+      <h2>Why choose <span>Voltex?</span></h2>
+      <p>We're licensed master electricians with over 20 years of experience. We do it right the first time — code-compliant, safe, and built to last.</p>
+      <ul class="why-list">
+        <li>Licensed & fully insured master electricians</li>
+        <li>Upfront, transparent pricing</li>
+        <li>Same-day service available</li>
+        <li>All work code-compliant and permitted</li>
+        <li>Clean, respectful technicians</li>
+        <li>Warranty on all installations</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="parallax-banner">
+  <div class="pb-bg parallax-bg">
+    <img src="https://picsum.photos/seed/voltex-banner/1920/1080" alt="Wiring">
+  </div>
+  <div class="pb-content reveal">
+    <h2>Electrical emergency?</h2>
+    <p>We answer 24/7. Don't risk it — call the pros.</p>
+  </div>
+</section>
+
+<section class="reviews" id="reviews">
+  <div class="reviews-header reveal"><h2>What our customers say</h2></div>
+  <div class="review-grid">
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Upgraded our entire panel in one day. Clean, professional, and explained everything."</p><div class="author">— Jennifer K., Homeowner</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Installed our EV charger. Fast, clean, and reasonably priced. Highly recommend."</p><div class="author">— Tom B., Homeowner</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Fixed a dangerous wiring issue the same day we called. True professionals."</p><div class="author">— Linda M., Property Manager</div></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Need an electrician? We're ready.</h2>
+  <p>Call now for same-day service or request a free estimate.</p>
+  <a href="tel:+15559876543" class="btn">Call (555) 987-6543</a>
+</section>
+
+<footer>
+  <div>© 2026 Voltex Electrical. All rights reserved.</div>
+  <div>Licensed · Insured · Bonded · (555) 987-6543</div>
+</footer>
+
+<script>
+const heroBg=document.querySelector('.hero-bg');
+window.addEventListener('scroll',()=>{const y=window.scrollY;if(heroBg)heroBg.style.transform=`translateY(${y*.3}px)`;},{passive:true});
+document.querySelectorAll('.parallax').forEach(sec=>{const bg=sec.querySelector('.parallax-bg,.pb-bg');if(!bg)return;window.addEventListener('scroll',()=>{const r=sec.getBoundingClientRect();bg.style.transform=`translateY(${r.top*.2}px)`;},{passive:true});});
+const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

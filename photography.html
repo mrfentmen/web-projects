@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lens — Photography Portfolio</title>
+<style>
+  :root { --bg:#0a0a0a; --fg:#f0f0f0; --muted:#7a7a7a; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:24px 48px; display:flex; justify-content:space-between; align-items:center; mix-blend-mode:difference; }
+  .logo { font-weight:900; font-size:20px; letter-spacing:2px; }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { opacity:.7; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; }
+
+  /* Hero */
+  .hero { min-height:60vh; display:flex; flex-direction:column; justify-content:center; padding:0 48px; }
+  .hero h1 { font-size:clamp(48px,8vw,120px); font-weight:900; line-height:.9; letter-spacing:-4px; }
+  .hero h1 span { color:var(--muted); }
+  .hero p { color:var(--muted); font-size:16px; margin-top:24px; max-width:480px; }
+
+  /* Filter tabs */
+  .filters { padding:40px 48px; display:flex; gap:16px; flex-wrap:wrap; }
+  .filter { padding:8px 20px; border:1px solid rgba(255,255,255,.2); font-size:12px; text-transform:uppercase; letter-spacing:2px; cursor:pointer; transition:all .2s; }
+  .filter:hover, .filter.active { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+
+  /* Masonry grid */
+  .masonry { padding:0 48px 100px; columns:3; column-gap:16px; }
+  .masonry-item { break-inside:avoid; margin-bottom:16px; position:relative; overflow:hidden; cursor:pointer; }
+  .masonry-item img { width:100%; transition:transform .6s; }
+  .masonry-item:hover img { transform:scale(1.05); }
+  .masonry-item .overlay { position:absolute; inset:0; background:rgba(0,0,0,.5); opacity:0; transition:opacity .3s; display:flex; align-items:center; justify-content:center; }
+  .masonry-item:hover .overlay { opacity:1; }
+  .masonry-item .overlay span { font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+
+  /* Lightbox */
+  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,.95); z-index:200; display:none; align-items:center; justify-content:center; cursor:zoom-out; }
+  .lightbox.open { display:flex; }
+  .lightbox img { max-width:90vw; max-height:90vh; object-fit:contain; }
+
+  /* About */
+  .about { padding:120px 48px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .about-img { height:500px; overflow:hidden; }
+  .about-text h2 { font-size:clamp(36px,5vw,64px); font-weight:900; letter-spacing:-2px; margin-bottom:24px; }
+  .about-text p { color:var(--muted); line-height:1.8; margin-bottom:16px; }
+
+  /* CTA */
+  .cta { padding:120px 48px; text-align:center; }
+  .cta h2 { font-size:clamp(48px,8vw,96px); font-weight:900; letter-spacing:-3px; margin-bottom:24px; }
+  .cta p { color:var(--muted); margin-bottom:32px; }
+  .cta a { display:inline-block; padding:14px 32px; border:1px solid var(--fg); font-size:13px; text-transform:uppercase; letter-spacing:2px; transition:all .2s; }
+  .cta a:hover { background:var(--fg); color:var(--bg); }
+
+  footer { padding:32px 48px; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .masonry{columns:2;padding:0 24px;} .about{grid-template-columns:1fr;gap:40px;padding:80px 24px;} nav{padding:20px 24px;} .nav-links{display:none;} }
+  @media(max-width:600px){ .masonry{columns:1;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">LENS</div>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Visual <span>stories.</span></h1>
+  <p>Photography that captures moments, emotions, and the beauty in between.</p>
+</section>
+
+<div class="filters">
+  <div class="filter active">All</div>
+  <div class="filter">Portrait</div>
+  <div class="filter">Landscape</div>
+  <div class="filter">Street</div>
+  <div class="filter">Architecture</div>
+</div>
+
+<section class="masonry">
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens1/600/800" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens2/600/400" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens3/600/600" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens4/600/900" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens5/600/500" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens6/600/700" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens7/600/450" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens8/600/650" alt=""><div class="overlay"><span>View</span></div></div>
+  <div class="masonry-item"><img src="https://picsum.photos/seed/lens9/600/550" alt=""><div class="overlay"><span>View</span></div></div>
+</section>
+
+<section class="about">
+  <div class="about-img"><img src="https://picsum.photos/seed/lens-about/800/600" alt="Photographer"></div>
+  <div class="about-text">
+    <h2>The photographer.</h2>
+    <p>With over 15 years behind the lens, I've captured stories across 40 countries. My work spans portrait, landscape, street, and architectural photography.</p>
+    <p>Every image is a moment frozen in time — a story waiting to be told.</p>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Let's create together.</h2>
+  <p>Available for commissions, collaborations, and exhibitions.</p>
+  <a href="mailto:hello@lens.photo">Get in touch</a>
+</section>
+
+<footer>
+  <div>© 2026 Lens Photography. All rights reserved.</div>
+  <div>hello@lens.photo · Instagram · Behance</div>
+</footer>
+
+<div class="lightbox" id="lightbox"><img src="" alt=""></div>
+
+<script>
+// Lightbox
+const lb = document.getElementById('lightbox');
+const lbImg = lb.querySelector('img');
+document.querySelectorAll('.masonry-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    lbImg.src = item.querySelector('img').src;
+    lb.classList.add('open');
+  });
+});
+lb.addEventListener('click',()=>lb.classList.remove('open'));
+
+// Filters
+document.querySelectorAll('.filter').forEach(f=>{
+  f.addEventListener('click',()=>{
+    document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));
+    f.classList.add('active');
+  });
+});
+
+// Reveal
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

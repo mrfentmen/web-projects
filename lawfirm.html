@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sterling & Associates — Law Firm</title>
+<style>
+  :root { --bg:#0f1419; --fg:#e8e6e1; --muted:#8a8f98; --accent:#c9a96e; --card:#161c24; --line:#1e2530; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(15,20,25,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .logo { font-weight:700; font-size:18px; letter-spacing:2px; }
+  .logo span { color:var(--accent); font-weight:400; font-style:italic; }
+  .nav-links { display:flex; gap:32px; font-size:13px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-cta { border:1px solid var(--accent); color:var(--accent); padding:9px 18px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; transition:all .2s; }
+  .nav-cta:hover { background:var(--accent); color:var(--bg); }
+
+  .hero { min-height:90vh; position:relative; display:flex; align-items:center; padding:0 48px; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; opacity:.25; }
+  .hero-bg img { filter:brightness(.3) saturate(.3); }
+  .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,var(--bg) 0%,rgba(15,20,25,.7) 50%,transparent 100%); }
+  .hero-content { position:relative; z-index:2; max-width:700px; }
+  .hero-eyebrow { font-size:12px; text-transform:uppercase; letter-spacing:4px; color:var(--accent); margin-bottom:24px; }
+  .hero h1 { font-size:clamp(40px,6vw,72px); font-weight:700; line-height:1.1; letter-spacing:-1.5px; margin-bottom:24px; }
+  .hero h1 span { color:var(--accent); font-style:italic; font-weight:400; }
+  .hero p { color:var(--muted); font-size:17px; line-height:1.7; margin-bottom:32px; max-width:560px; }
+  .hero-cta { display:flex; gap:16px; }
+  .btn { padding:14px 28px; font-size:13px; font-weight:600; transition:all .2s; display:inline-block; }
+  .btn.primary { background:var(--accent); color:var(--bg); }
+  .btn.primary:hover { background:#d9b97e; }
+  .btn.ghost { border:1px solid var(--line); color:var(--fg); }
+  .btn.ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+  .trusted { padding:40px 48px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:48px; flex-wrap:wrap; background:var(--card); }
+  .trusted .label { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--muted); white-space:nowrap; }
+  .trusted .logos { display:flex; gap:48px; flex-wrap:wrap; opacity:.6; }
+  .trusted .logos span { font-weight:600; font-size:14px; letter-spacing:1px; }
+
+  .practice { padding:120px 48px; }
+  .practice-header { max-width:700px; margin-bottom:64px; }
+  .practice-header .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:16px; }
+  .practice-header h2 { font-size:clamp(32px,4vw,52px); font-weight:700; letter-spacing:-1.5px; line-height:1.1; }
+  .practice-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); }
+  .practice-card { background:var(--bg); padding:48px 32px; transition:background .3s; }
+  .practice-card:hover { background:var(--card); }
+  .practice-card .num { font-size:12px; color:var(--accent); letter-spacing:2px; margin-bottom:24px; }
+  .practice-card h3 { font-size:20px; font-weight:600; margin-bottom:12px; }
+  .practice-card p { color:var(--muted); font-size:14px; line-height:1.7; }
+
+  .stats { padding:100px 48px; background:var(--card); text-align:center; }
+  .stats h2 { font-size:clamp(32px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:48px; }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; max-width:1000px; margin:0 auto; }
+  .stat .num { font-size:48px; font-weight:700; color:var(--accent); }
+  .stat .lbl { color:var(--muted); font-size:13px; margin-top:8px; }
+
+  .team { padding:120px 48px; }
+  .team h2 { font-size:clamp(32px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:48px; }
+  .team-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+  .member .img { height:300px; overflow:hidden; margin-bottom:16px; filter:grayscale(.3); transition:filter .3s; }
+  .member:hover .img { filter:grayscale(0); }
+  .member .img img { transition:transform .6s; }
+  .member:hover .img img { transform:scale(1.05); }
+  .member .name { font-size:16px; font-weight:600; }
+  .member .role { color:var(--muted); font-size:13px; margin-top:4px; }
+  .member .school { color:var(--accent); font-size:12px; margin-top:2px; }
+
+  .cta { padding:120px 48px; text-align:center; background:linear-gradient(135deg,var(--accent),#8b7355); color:var(--bg); }
+  .cta h2 { font-size:clamp(36px,5vw,64px); font-weight:700; margin-bottom:16px; }
+  .cta p { opacity:.85; margin-bottom:32px; font-size:16px; }
+  .cta .btn { background:var(--bg); color:var(--accent); padding:14px 32px; font-weight:600; display:inline-block; }
+
+  footer { padding:32px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .practice-grid{grid-template-columns:1fr;} .team-grid{grid-template-columns:1fr 1fr;} .stats-grid{grid-template-columns:1fr 1fr;} nav{padding:16px 24px;} .nav-links{display:none;} .hero{padding:0 24px;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">STERLING <span>& Associates</span></div>
+  <div class="nav-links">
+    <a href="#practice">Practice</a>
+    <a href="#team">Team</a>
+    <a href="#results">Results</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Free consultation</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"><img src="https://picsum.photos/seed/law-hero/1920/1080" alt=""></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Law Firm · Est. 1998</div>
+    <h1>Justice delivered with <span>precision.</span></h1>
+    <p>Sterling & Associates is a full-service law firm dedicated to protecting your rights and securing your future. Over 25 years of excellence.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn primary">Free consultation</a>
+      <a href="#practice" class="btn ghost">Our practice areas</a>
+    </div>
+  </div>
+</section>
+
+<div class="trusted">
+  <div class="label">Recognized by</div>
+  <div class="logos">
+    <span>Chambers</span><span>Super Lawyers</span><span>Best Lawyers</span><span>AVVO 10.0</span>
+  </div>
+</div>
+
+<section class="practice" id="practice">
+  <div class="practice-header reveal">
+    <div class="eyebrow">Practice areas</div>
+    <h2>Comprehensive legal services.</h2>
+  </div>
+  <div class="practice-grid">
+    <div class="practice-card reveal"><div class="num">01</div><h3>Corporate Law</h3><p>Mergers, acquisitions, and corporate governance.</p></div>
+    <div class="practice-card reveal"><div class="num">02</div><h3>Litigation</h3><p>Commercial and civil litigation with proven results.</p></div>
+    <div class="practice-card reveal"><div class="num">03</div><h3>Real Estate</h3><p>Transactions, development, and property disputes.</p></div>
+    <div class="practice-card reveal"><div class="num">04</div><h3>Employment</h3><p>Workplace disputes, contracts, and compliance.</p></div>
+    <div class="practice-card reveal"><div class="num">05</div><h3>Intellectual Property</h3><p>Patents, trademarks, and copyright protection.</p></div>
+    <div class="practice-card reveal"><div class="num">06</div><h3>Estate Planning</h3><p>Wills, trusts, and wealth preservation.</p></div>
+  </div>
+</section>
+
+<section class="stats" id="results">
+  <h2 class="reveal">Proven results</h2>
+  <div class="stats-grid">
+    <div class="stat reveal"><div class="num">$2.8B</div><div class="lbl">Recovered for clients</div></div>
+    <div class="stat reveal"><div class="num">98%</div><div class="lbl">Success rate</div></div>
+    <div class="stat reveal"><div class="num">500+</div><div class="lbl">Cases won</div></div>
+    <div class="stat reveal"><div class="num">25yr</div><div class="lbl">Experience</div></div>
+  </div>
+</section>
+
+<section class="team">
+  <h2 class="reveal">Our attorneys</h2>
+  <div class="team-grid">
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/law-t1/400/400" alt=""></div><div class="name">Robert Sterling</div><div class="role">Managing Partner</div><div class="school">Harvard Law</div></div>
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/law-t2/400/400" alt=""></div><div class="name">Diana Chen</div><div class="role">Senior Partner</div><div class="school">Yale Law</div></div>
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/law-t3/400/400" alt=""></div><div class="name">James Okonkwo</div><div class="role">Partner</div><div class="school">Stanford Law</div></div>
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/law-t4/400/400" alt=""></div><div class="name">Sarah Mitchell</div><div class="role">Associate</div><div class="school">Columbia Law</div></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="reveal">Your case matters.</h2>
+  <p class="reveal">Schedule a free consultation with our team.</p>
+  <a href="tel:+12125550100" class="btn reveal">Call (212) 555-0100</a>
+</section>
+
+<footer>
+  <div>© 2026 Sterling & Associates. All rights reserved.</div>
+  <div>New York · London · (212) 555-0100</div>
+</footer>
+
+<script>
+const heroBg=document.querySelector('.hero-bg');
+window.addEventListener('scroll',()=>{const y=window.scrollY;if(heroBg)heroBg.style.transform=`translateY(${y*.3}px)`;},{passive:true});
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

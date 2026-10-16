@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlipCards — Interactive Showcase</title>
+<style>
+  :root { --bg:#0a0a0f; --fg:#f0f0f5; --muted:#7a7a8a; --accent:#6366f1; --accent2:#ec4899; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:24px 48px; display:flex; justify-content:space-between; align-items:center; mix-blend-mode:difference; }
+  .logo { font-weight:900; font-size:22px; letter-spacing:-1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { opacity:.7; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; }
+
+  .hero { min-height:70vh; display:flex; flex-direction:column; justify-content:center; padding:0 48px; }
+  .hero h1 { font-size:clamp(48px,8vw,110px); font-weight:900; line-height:.9; letter-spacing:-3px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p { color:var(--muted); font-size:18px; max-width:560px; margin-top:24px; }
+
+  /* Flip cards */
+  .cards-section { padding:80px 48px 120px; }
+  .cards-section h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .flip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective:1200px; }
+  .flip-card { height:320px; perspective:1000px; cursor:pointer; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .7s cubic-bezier(.2,.8,.2,1); transform-style:preserve-3d; }
+  .flip-card:hover .flip-inner, .flip-card.flipped .flip-inner { transform:rotateY(180deg); }
+  .flip-front, .flip-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:32px; display:flex; flex-direction:column; justify-content:center; }
+  .flip-front { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1); }
+  .flip-front .icon { font-size:48px; margin-bottom:16px; }
+  .flip-front h3 { font-size:24px; font-weight:700; margin-bottom:8px; }
+  .flip-front p { color:var(--muted); font-size:14px; }
+  .flip-front .hint { margin-top:auto; font-size:11px; text-transform:uppercase; letter-spacing:2px; color:var(--accent); }
+  .flip-back { background:linear-gradient(135deg,var(--accent),var(--accent2)); transform:rotateY(180deg); }
+  .flip-back h3 { font-size:20px; font-weight:700; margin-bottom:12px; }
+  .flip-back p { font-size:14px; line-height:1.6; opacity:.9; }
+  .flip-back .btn { margin-top:16px; padding:8px 16px; background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.3); font-size:12px; text-transform:uppercase; letter-spacing:1px; display:inline-block; width:fit-content; }
+
+  /* Click to flip toggle */
+  .toggle-mode { padding:0 48px 40px; display:flex; align-items:center; gap:12px; }
+  .toggle-mode span { font-size:13px; color:var(--muted); }
+  .toggle-switch { width:48px; height:24px; background:rgba(255,255,255,.1); border-radius:12px; position:relative; cursor:pointer; transition:background .2s; }
+  .toggle-switch.active { background:var(--accent); }
+  .toggle-switch::after { content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; background:#fff; border-radius:50%; transition:transform .2s; }
+  .toggle-switch.active::after { transform:translateX(24px); }
+
+  /* CTA */
+  .cta { padding:140px 48px; text-align:center; }
+  .cta h2 { font-size:clamp(48px,8vw,96px); font-weight:900; letter-spacing:-3px; margin-bottom:24px; }
+  .cta h2 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .cta p { color:var(--muted); font-size:18px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:600; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:40px 48px; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .flip-grid{grid-template-columns:1fr;} nav{padding:20px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FLIP<span>CARDS</span></div>
+  <div class="nav-links">
+    <a href="#cards">Cards</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Flip to <span>reveal.</span></h1>
+  <p>Interactive 3D flip cards. Hover or click to see the back. Toggle click mode below.</p>
+</section>
+
+<div class="toggle-mode">
+  <span>Click to flip mode</span>
+  <div class="toggle-switch" id="toggleSwitch"></div>
+</div>
+
+<section class="cards-section" id="cards">
+  <h2 class="reveal">Our services</h2>
+  <div class="flip-grid">
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front"><div class="icon">🎨</div><h3>Design</h3><p>Brand identity, web design, and visual systems.</p><div class="hint">Hover to flip →</div></div>
+        <div class="flip-back"><h3>Design Services</h3><p>Logo design, brand guidelines, UI/UX, and design systems.</p><a href="#" class="btn">Learn more</a></div>
+      </div>
+    </div>
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front"><div class="icon">💻</div><h3>Development</h3><p>Web apps, APIs, and full-stack solutions.</p><div class="hint">Hover to flip →</div></div>
+        <div class="flip-back"><h3>Dev Services</h3><p>React, Next.js, Node.js, and cloud infrastructure.</p><a href="#" class="btn">Learn more</a></div>
+      </div>
+    </div>
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front"><div class="icon">📈</div><h3>Marketing</h3><p>SEO, content, and growth strategies.</p><div class="hint">Hover to flip →</div></div>
+        <div class="flip-back"><h3>Marketing Services</h3><p>SEO optimization, content strategy, and analytics.</p><a href="#" class="btn">Learn more</a></div>
+      </div>
+    </div>
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front"><div class="icon">🎬</div><h3>Motion</h3><p>Animation, video, and interactive media.</p><div class="hint">Hover to flip →</div></div>
+        <div class="flip-back"><h3>Motion Services</h3><p>2D/3D animation, video editing, and motion graphics.</p><a href="#" class="btn">Learn more</a></div>
+      </div>
+    </div>
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front"><div class="icon">🧠</div><h3>Strategy</h3><p>Business strategy and digital transformation.</p><div class="hint">Hover to flip →</div></div>
+        <div class="flip-back"><h3>Strategy Services</h3><p>Business consulting, digital transformation, and roadmap planning.</p><a href="#" class="btn">Learn more</a></div>
+      </div>
+    </div>
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front"><div class="icon">🔍</div><h3>Research</h3><p>User research and market analysis.</p><div class="hint">Hover to flip →</div></div>
+        <div class="flip-back"><h3>Research Services</h3><p>User interviews, surveys, and competitive analysis.</p><a href="#" class="btn">Learn more</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="reveal">Let's <span>collaborate.</span></h2>
+  <p class="reveal">Ready to start your next project?</p>
+  <a href="mailto:hello@flipcards.com" class="btn2 reveal">Get in touch →</a>
+</section>
+
+<footer>
+  <div>© 2026 FlipCards. All rights reserved.</div>
+  <div>hello@flipcards.com</div>
+</footer>
+
+<script>
+// Toggle click mode
+const toggle = document.getElementById('toggleSwitch');
+let clickMode = false;
+toggle.addEventListener('click', () => {
+  clickMode = !clickMode;
+  toggle.classList.toggle('active', clickMode);
+  document.querySelectorAll('.flip-card').forEach(card => {
+    if(clickMode) {
+      card.addEventListener('click', flipHandler);
+    } else {
+      card.removeEventListener('click', flipHandler);
+      card.classList.remove('flipped');
+    }
+  });
+});
+function flipHandler(){ this.classList.toggle('flipped'); }
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

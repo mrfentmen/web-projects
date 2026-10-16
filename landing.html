@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova — Build faster</title>
+<style>
+  :root {
+    --bg: #0b0c10;
+    --bg2: #13151b;
+    --card: #1a1d24;
+    --border: #262a33;
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --accent: #7c5cff;
+    --accent2: #3dd6f5;
+    --grad: linear-gradient(135deg, #7c5cff, #3dd6f5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px);
+    background: rgba(11,12,16,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+  .logo span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+    cursor: pointer; text-decoration: none; transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .btn.primary { background: var(--grad); border: none; color: #fff; }
+  .btn.primary:hover { box-shadow: 0 8px 24px rgba(124,92,255,.35); }
+  .hero {
+    max-width: 1200px; margin: 0 auto; padding: 96px 24px 64px;
+    text-align: center; position: relative;
+  }
+  .badge {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    background: rgba(124,92,255,.12); border: 1px solid rgba(124,92,255,.3);
+    color: #b9a8ff; font-size: 13px; margin-bottom: 24px;
+  }
+  h1 {
+    font-size: clamp(40px, 7vw, 72px); font-weight: 800; letter-spacing: -2px;
+    line-height: 1.05; margin-bottom: 20px;
+  }
+  h1 .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--muted); font-size: 19px; max-width: 640px; margin: 0 auto 36px; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hero-visual {
+    margin-top: 64px; max-width: 900px; margin-left: auto; margin-right: auto;
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; box-shadow: 0 40px 80px rgba(0,0,0,.5);
+  }
+  .window-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+  .code {
+    font-family: "SF Mono", Menlo, monospace; font-size: 13px; color: #c9d1d9;
+    background: #0d1117; border-radius: 8px; padding: 16px; text-align: left;
+    overflow-x: auto; line-height: 1.7;
+  }
+  .code .kw { color: #ff7b72; } .code .fn { color: #d2a8ff; } .code .str { color: #a5d6ff; } .code .cm { color: #8b949e; }
+  .features { max-width: 1200px; margin: 0 auto; padding: 64px 24px; }
+  .section-title { text-align: center; margin-bottom: 48px; }
+  .section-title h2 { font-size: 36px; font-weight: 700; letter-spacing: -1px; margin-bottom: 12px; }
+  .section-title p { color: var(--muted); font-size: 17px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 28px; transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .card .icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: rgba(124,92,255,.12); display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 16px;
+  }
+  .card h3 { font-size: 18px; margin-bottom: 8px; }
+  .card p { color: var(--muted); font-size: 14px; }
+  .stats {
+    max-width: 1200px; margin: 0 auto; padding: 48px 24px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
+    text-align: center;
+  }
+  .stat .num { font-size: 40px; font-weight: 800; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .lbl { color: var(--muted); font-size: 14px; }
+  .cta {
+    max-width: 800px; margin: 64px auto; padding: 48px 32px; text-align: center;
+    background: linear-gradient(135deg, rgba(124,92,255,.15), rgba(61,214,245,.1));
+    border: 1px solid var(--border); border-radius: 20px;
+  }
+  .cta h2 { font-size: 32px; margin-bottom: 12px; }
+  .cta p { color: var(--muted); margin-bottom: 24px; }
+  footer {
+    border-top: 1px solid var(--border); padding: 32px 24px; text-align: center;
+    color: var(--muted); font-size: 13px;
+  }
+  @media (max-width: 640px) { .nav-links { display: none; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <div class="logo">no<span>va</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#stats">Stats</a>
+      <a href="#cta">Pricing</a>
+      <a href="#" class="btn">Sign in</a>
+      <a href="#" class="btn primary">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <span class="badge">✨ Now in public beta</span>
+  <h1>Ship your next idea<br><span class="grad">10× faster</span></h1>
+  <p>Nova turns your prompts into production-ready apps. No boilerplate, no config — just describe what you want and watch it build.</p>
+  <div class="hero-cta">
+    <a href="#" class="btn primary">Start building free</a>
+    <a href="#" class="btn">Watch demo →</a>
+  </div>
+  <div class="hero-visual">
+    <div class="window-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+    <div class="code">
+<span class="cm">// describe your app</span><br>
+<span class="kw">const</span> app = <span class="fn">nova</span>.create({<br>
+&nbsp;&nbsp;name: <span class="str">"todo-app"</span>,<br>
+&nbsp;&nbsp;features: [<span class="str">"auth"</span>, <span class="str">"db"</span>, <span class="str">"realtime"</span>],<br>
+&nbsp;&nbsp;deploy: <span class="str">"edge"</span><br>
+});<br>
+<br>
+<span class="cm">// ✓ built in 4.2s</span><br>
+<span class="cm">// ✓ deployed to 42 regions</span>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-title">
+    <h2>Everything you need</h2>
+    <p>From prompt to production in one place.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="icon">⚡</div><h3>Instant builds</h3><p>Generate full-stack apps in seconds with optimized, production-grade code.</p></div>
+    <div class="card"><div class="icon">🔒</div><h3>Built-in auth</h3><p>Secure authentication out of the box — OAuth, magic links, and SSO.</p></div>
+    <div class="card"><div class="icon">🌐</div><h3>Edge deploy</h3><p>Deploy globally to 40+ regions with zero configuration.</p></div>
+    <div class="card"><div class="icon">📊</div><h3>Live analytics</h3><p>Real-time metrics and traces for every request.</p></div>
+    <div class="card"><div class="icon">🧩</div><h3>Composable</h3><p>Mix and match blocks to build exactly what you need.</p></div>
+    <div class="card"><div class="icon">🛡️</div><h3>Secure by default</h3><p>SOC 2 compliant infrastructure with automatic backups.</p></div>
+  </div>
+</section>
+
+<section class="stats" id="stats">
+  <div class="stat"><div class="num">10M+</div><div class="lbl">Apps built</div></div>
+  <div class="stat"><div class="num">42</div><div class="lbl">Edge regions</div></div>
+  <div class="stat"><div class="num">99.99%</div><div class="lbl">Uptime</div></div>
+  <div class="stat"><div class="num">4.2s</div><div class="lbl">Avg build time</div></div>
+</section>
+
+<section class="cta" id="cta">
+  <h2>Ready to ship?</h2>
+  <p>Join 50,000 developers building with Nova.</p>
+  <a href="#" class="btn primary">Get started free →</a>
+</section>
+
+<footer>© 2026 Nova Inc. · Privacy · Terms</footer>
+</body>
+</html>

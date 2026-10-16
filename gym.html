@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex — Performance Training</title>
+<style>
+  :root { --bg:#0a0a0a; --fg:#f5f5f5; --muted:#888; --accent:#e8ff3a; --card:#141414; --line:#222; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(180deg,var(--bg) 0%,transparent 100%); }
+  .logo { font-weight:900; font-size:22px; letter-spacing:-1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:28px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { opacity:.7; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; color:var(--accent); }
+  .nav-cta { background:var(--accent); color:var(--bg); padding:10px 20px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
+
+  /* Hero */
+  .hero { height:100vh; position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:0 40px 80px; }
+  .hero-bg { position:absolute; inset:-20% 0; will-change:transform; }
+  .hero-bg img { filter:brightness(.5) contrast(1.1) saturate(.8); }
+  .hero-overlay { position:absolute; inset:0; background:linear-gradient(180deg,transparent 40%,var(--bg) 100%); }
+  .hero-content { position:relative; z-index:2; max-width:900px; }
+  .hero-eyebrow { font-size:12px; text-transform:uppercase; letter-spacing:4px; color:var(--accent); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(60px,12vw,160px); font-weight:900; line-height:.9; letter-spacing:-4px; text-transform:uppercase; }
+  .hero h1 .outline { -webkit-text-stroke:2px var(--fg); color:transparent; }
+  .hero-bottom { position:absolute; bottom:40px; right:40px; z-index:2; text-align:right; font-size:12px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); }
+  .hero-bottom .big { font-size:64px; font-weight:900; color:var(--fg); display:block; line-height:1; }
+  .hero-scroll { position:absolute; bottom:40px; left:40px; z-index:2; font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--muted); }
+  .hero-scroll::before { content:""; display:inline-block; width:40px; height:1px; background:var(--muted); vertical-align:middle; margin-right:12px; }
+
+  /* Marquee */
+  .marquee { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:16px 0; overflow:hidden; white-space:nowrap; background:var(--accent); color:var(--bg); }
+  .marquee-track { display:inline-block; animation:scroll 18s linear infinite; font-weight:800; font-size:14px; text-transform:uppercase; letter-spacing:2px; }
+  .marquee-track span { margin:0 40px; }
+  @keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* Intro */
+  .intro { padding:120px 40px; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+  .intro-img { height:500px; position:relative; overflow:hidden; }
+  .intro-img img { transition:transform .7s; }
+  .intro-img:hover img { transform:scale(1.06); }
+  .intro-img::after { content:""; position:absolute; inset:0; border:2px solid var(--accent); transform:translate(16px,16px); pointer-events:none; z-index:-1; }
+  .intro-text h2 { font-size:clamp(32px,5vw,64px); font-weight:900; text-transform:uppercase; line-height:.95; letter-spacing:-2px; margin-bottom:20px; }
+  .intro-text h2 span { color:var(--accent); }
+  .intro-text p { color:var(--muted); line-height:1.7; margin-bottom:24px; max-width:480px; }
+  .btn { display:inline-block; padding:14px 32px; background:var(--accent); color:var(--bg); font-weight:700; text-transform:uppercase; font-size:12px; letter-spacing:2px; transition:transform .2s; }
+  .btn:hover { transform:translateY(-2px); }
+  .btn.outline { background:transparent; color:var(--fg); border:2px solid var(--fg); }
+  .btn.outline:hover { background:var(--fg); color:var(--bg); }
+
+  /* Programs */
+  .programs { padding:80px 40px; }
+  .programs-header { display:flex; justify-content:space-between; align-items:end; margin-bottom:48px; border-bottom:1px solid var(--line); padding-bottom:24px; }
+  .programs-header h2 { font-size:clamp(32px,5vw,64px); font-weight:900; text-transform:uppercase; letter-spacing:-2px; }
+  .prog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); }
+  .prog { background:var(--bg); padding:40px 32px; position:relative; overflow:hidden; transition:background .3s; }
+  .prog:hover { background:var(--card); }
+  .prog .num { font-size:12px; color:var(--accent); letter-spacing:2px; margin-bottom:48px; }
+  .prog h3 { font-size:28px; font-weight:800; text-transform:uppercase; letter-spacing:-1px; margin-bottom:12px; }
+  .prog p { color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:24px; }
+  .prog .arrow { color:var(--accent); font-size:20px; }
+  .prog .img { position:absolute; inset:0; opacity:0; transition:opacity .4s; }
+  .prog .img img { filter:brightness(.3) saturate(.5); }
+  .prog:hover .img { opacity:1; }
+  .prog > *:not(.img) { position:relative; z-index:2; }
+
+  /* Parallax stats */
+  .stats-banner { height:60vh; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .stats-bg { position:absolute; inset:-25% 0; }
+  .stats-bg img { filter:brightness(.35) saturate(.6); }
+  .stats-content { position:relative; z-index:2; display:grid; grid-template-columns:repeat(4,1fr); gap:40px; text-align:center; width:100%; max-width:1100px; padding:0 40px; }
+  .stat .num { font-size:clamp(48px,7vw,96px); font-weight:900; color:var(--accent); line-height:1; }
+  .stat .lbl { font-size:12px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-top:8px; }
+
+  /* Schedule */
+  .schedule { padding:120px 40px; }
+  .schedule h2 { font-size:clamp(32px,5vw,64px); font-weight:900; text-transform:uppercase; letter-spacing:-2px; margin-bottom:48px; }
+  .sched-table { width:100%; border-collapse:collapse; }
+  .sched-table th { text-align:left; padding:16px; border-bottom:2px solid var(--fg); font-size:12px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); }
+  .sched-table td { padding:20px 16px; border-bottom:1px solid var(--line); font-size:15px; }
+  .sched-table tr:hover td { background:var(--card); }
+  .sched-table .time { color:var(--accent); font-weight:700; }
+  .sched-table .tag { display:inline-block; padding:4px 10px; background:var(--accent); color:var(--bg); font-size:11px; font-weight:700; text-transform:uppercase; }
+
+  /* CTA */
+  .cta { padding:120px 40px; text-align:center; background:var(--accent); color:var(--bg); }
+  .cta h2 { font-size:clamp(40px,8vw,120px); font-weight:900; text-transform:uppercase; letter-spacing:-3px; line-height:.9; margin-bottom:24px; }
+  .cta p { font-size:16px; margin-bottom:32px; max-width:500px; margin-left:auto; margin-right:auto; }
+  .cta .btn { background:var(--bg); color:var(--accent); }
+  .cta .btn:hover { background:transparent; color:var(--bg); border:2px solid var(--bg); }
+
+  footer { padding:32px 40px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:1px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .intro{grid-template-columns:1fr;gap:40px;padding:80px 24px;} .prog-grid{grid-template-columns:1fr;} .stats-content{grid-template-columns:1fr 1fr;} nav{padding:16px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">APEX<span>.</span></div>
+  <div class="nav-links">
+    <a href="#programs">Programs</a>
+    <a href="#schedule">Schedule</a>
+    <a href="#trainers">Trainers</a>
+    <a href="#contact">Join</a>
+  </div>
+  <a href="#contact" class="nav-cta">Start now</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg parallax-bg">
+    <img src="https://picsum.photos/seed/apex-hero/1920/1080" alt="Gym">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Performance Training · NYC</div>
+    <h1>No <span class="outline">excuses.</span><br>Just results.</h1>
+  </div>
+  <div class="hero-scroll">Scroll down</div>
+  <div class="hero-bottom">
+    <span class="big">500+</span>
+    Members transformed
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Strength</span><span>Conditioning</span><span>Mobility</span><span>Recovery</span><span>Nutrition</span>
+    <span>Strength</span><span>Conditioning</span><span>Mobility</span><span>Recovery</span><span>Nutrition</span>
+  </div>
+</div>
+
+<section class="intro">
+  <div class="intro-img reveal">
+    <img src="https://picsum.photos/seed/apex-intro/800/700" alt="Training">
+  </div>
+  <div class="intro-text reveal">
+    <h2>Built for <span>people</span> who refuse to settle.</h2>
+    <p>Apex isn't a gym. It's a training facility built for athletes, professionals, and anyone serious about performance. Expert coaches. Evidence-based programming. A community that pushes you.</p>
+    <a href="#programs" class="btn">Explore programs</a>
+  </div>
+</section>
+
+<section class="programs" id="programs">
+  <div class="programs-header">
+    <h2>Programs</h2>
+    <span style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:2px;">04 disciplines</span>
+  </div>
+  <div class="prog-grid">
+    <div class="prog reveal">
+      <div class="img"><img src="https://picsum.photos/seed/apex-p1/600/400" alt=""></div>
+      <div class="num">01</div>
+      <h3>Strength</h3>
+      <p>Progressive overload. Compound lifts. Real gains.</p>
+      <div class="arrow">→</div>
+    </div>
+    <div class="prog reveal">
+      <div class="img"><img src="https://picsum.photos/seed/apex-p2/600/400" alt=""></div>
+      <div class="num">02</div>
+      <h3>Conditioning</h3>
+      <p>HIIT, metabolic work, and engine building.</p>
+      <div class="arrow">→</div>
+    </div>
+    <div class="prog reveal">
+      <div class="img"><img src="https://picsum.photos/seed/apex-p3/600/400" alt=""></div>
+      <div class="num">03</div>
+      <h3>Mobility</h3>
+      <p>Move better. Recover faster. Stay injury-free.</p>
+      <div class="arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-banner parallax">
+  <div class="stats-bg parallax-bg">
+    <img src="https://picsum.photos/seed/apex-stats/1920/1080" alt="">
+  </div>
+  <div class="stats-content">
+    <div class="stat reveal"><div class="num">500+</div><div class="lbl">Members</div></div>
+    <div class="stat reveal"><div class="num">12</div><div class="lbl">Coaches</div></div>
+    <div class="stat reveal"><div class="num">98%</div><div class="lbl">Retention</div></div>
+    <div class="stat reveal"><div class="num">5yr</div><div class="lbl">In business</div></div>
+  </div>
+</section>
+
+<section class="schedule" id="schedule">
+  <h2 class="reveal">Weekly schedule</h2>
+  <table class="sched-table">
+    <thead><tr><th>Time</th><th>Monday</th><th>Wednesday</th><th>Friday</th></tr></thead>
+    <tbody>
+      <tr><td class="time">6:00 AM</td><td>Strength <span class="tag">Beginner</span></td><td>Conditioning</td><td>Mobility</td></tr>
+      <tr><td class="time">12:00 PM</td><td>Strength</td><td>Strength</td><td>Conditioning</td></tr>
+      <tr><td class="time">6:00 PM</td><td>Conditioning <span class="tag">Advanced</span></td><td>Mobility</td><td>Strength</td></tr>
+      <tr><td class="time">7:30 PM</td><td>Open gym</td><td>Open gym</td><td>Open gym</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Stop thinking.<br>Start training.</h2>
+  <p>First session is on us. No commitment. Just show up.</p>
+  <a href="mailto:join@apex.fit" class="btn">Book a free session</a>
+</section>
+
+<footer>
+  <div>© 2026 Apex Performance. All rights reserved.</div>
+  <div>NYC · join@apex.fit · @apex.fit</div>
+</footer>
+
+<script>
+const heroBg=document.querySelector('.hero-bg');
+window.addEventListener('scroll',()=>{const y=window.scrollY;if(heroBg)heroBg.style.transform=`translateY(${y*.4}px)`;},{passive:true});
+document.querySelectorAll('.parallax').forEach(sec=>{const bg=sec.querySelector('.parallax-bg,.stats-bg');if(!bg)return;window.addEventListener('scroll',()=>{const r=sec.getBoundingClientRect();bg.style.transform=`translateY(${r.top*.25}px)`;},{passive:true});});
+const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
