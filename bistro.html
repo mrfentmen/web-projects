@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bistro — Modern European</title>
+<style>
+  :root { --bg:#0a0a0f; --fg:#f0f0f5; --muted:#7a7a8a; --accent:#d4a574; --accent2:#8b3a3a; --gold:#f5c518; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; cursor:none; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  /* Custom cursor */
+  .cursor { position:fixed; width:14px; height:14px; border-radius:50%; background:var(--fg); pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:difference; transition:width .25s,height .25s; }
+  .cursor-ring { position:fixed; width:40px; height:40px; border:1px solid rgba(255,255,255,.4); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
+  .cursor.hover { width:60px; height:60px; }
+  .cursor-ring.hover { width:80px; height:80px; border-color:var(--accent); }
+
+  /* Particle canvas */
+  #particles { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.3; }
+
+  /* Mesh blobs */
+  .blob { position:fixed; border-radius:50%; filter:blur(80px); opacity:.3; animation:meshMove 20s ease-in-out infinite; pointer-events:none; z-index:0; }
+  .blob1 { width:500px; height:500px; background:var(--accent); top:-10%; left:-10%; }
+  .blob2 { width:400px; height:400px; background:var(--accent2); top:30%; right:-10%; animation-delay:-7s; }
+  .blob3 { width:450px; height:450px; background:var(--gold); bottom:-10%; left:20%; animation-delay:-14s; }
+  @keyframes meshMove { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(40px,-20px) scale(1.1)} 50%{transform:translate(-20px,40px) scale(0.9)} 75%{transform:translate(20px,20px) scale(1.05)} }
+
+  /* Progress bar */
+  .progress { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:200; width:0%; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 48px; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,.06); }
+  .logo { font-weight:700; font-size:20px; letter-spacing:2px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+
+  /* Hero */
+  .hero { min-height:100vh; position:relative; display:flex; align-items:center; justify-content:center; text-align:center; overflow:hidden; z-index:1; }
+  .hero-bg { position:absolute; inset:-20% 0; will-change:transform; z-index:0; }
+  .hero-bg img { filter:brightness(.35) saturate(1.2); }
+  .hero-overlay { position:absolute; inset:0; background:radial-gradient(ellipse at center,rgba(10,10,15,.3) 0%,rgba(10,10,15,.85) 100%); z-index:1; }
+  .hero-content { position:relative; z-index:2; }
+  .hero-eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:5px; color:var(--accent); margin-bottom:24px; opacity:0; animation:fadeUp 1s .2s forwards; }
+  .hero h1 { font-size:clamp(52px,9vw,120px); font-weight:700; line-height:1; letter-spacing:-2px; margin-bottom:20px; opacity:0; animation:fadeUp 1s .4s forwards; }
+  .hero h1 .it { font-style:italic; color:var(--accent); font-weight:400; }
+  .hero-sub { color:var(--muted); font-size:18px; max-width:520px; margin:0 auto 36px; opacity:0; animation:fadeUp 1s .6s forwards; }
+  .hero-cta { display:flex; gap:16px; justify-content:center; opacity:0; animation:fadeUp 1s .8s forwards; }
+  .btn { padding:14px 32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; transition:all .3s; display:inline-block; }
+  .btn.filled { background:var(--accent); color:var(--bg); }
+  .btn.filled:hover { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  .btn.ghost { border:1px solid var(--fg); color:var(--fg); }
+  .btn.ghost:hover { background:var(--fg); color:var(--bg); }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  /* 3D Tilt menu */
+  .menu-section { padding:120px 48px; position:relative; z-index:2; }
+  .menu-section h2 { font-size:clamp(36px,5vw,64px); font-weight:700; text-align:center; margin-bottom:48px; letter-spacing:-1px; }
+  .menu-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective:1200px; max-width:1100px; margin:0 auto; }
+  .menu-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:32px; position:relative; overflow:hidden; transform-style:preserve-3d; transition:transform .1s; backdrop-filter:blur(10px); cursor:pointer; }
+  .menu-card .glow { position:absolute; inset:0; opacity:0; transition:opacity .3s; background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(212,165,116,.2), transparent 60%); pointer-events:none; }
+  .menu-card:hover .glow { opacity:1; }
+  .menu-card .name { font-size:22px; font-weight:600; margin-bottom:8px; transform:translateZ(20px); }
+  .menu-card .desc { color:var(--muted); font-size:13px; margin-bottom:16px; transform:translateZ(10px); }
+  .menu-card .price { color:var(--accent); font-size:18px; font-weight:600; transform:translateZ(20px); }
+
+  /* Flip cards for wine */
+  .wine-section { padding:80px 48px 120px; position:relative; z-index:2; }
+  .wine-section h2 { font-size:clamp(36px,5vw,64px); font-weight:700; text-align:center; margin-bottom:48px; letter-spacing:-1px; }
+  .flip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective:1200px; max-width:1100px; margin:0 auto; }
+  .flip-card { height:240px; perspective:1000px; cursor:pointer; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .7s; transform-style:preserve-3d; }
+  .flip-card:hover .flip-inner { transform:rotateY(180deg); }
+  .flip-front, .flip-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:center; }
+  .flip-front { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1); }
+  .flip-front .icon { font-size:36px; margin-bottom:12px; }
+  .flip-front h3 { font-size:20px; font-weight:600; }
+  .flip-back { background:linear-gradient(135deg,var(--accent),var(--accent2)); transform:rotateY(180deg); }
+  .flip-back h3 { font-size:18px; font-weight:600; margin-bottom:8px; }
+  .flip-back p { font-size:13px; opacity:.9; line-height:1.6; }
+
+  /* Stats */
+  .stats { padding:100px 48px; text-align:center; position:relative; z-index:2; }
+  .stats h2 { font-size:clamp(36px,5vw,64px); font-weight:700; margin-bottom:48px; letter-spacing:-1px; }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; max-width:900px; margin:0 auto; }
+  .stat .num { font-size:clamp(40px,6vw,72px); font-weight:900; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stat .lbl { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:2px; margin-top:8px; }
+
+  /* CTA */
+  .cta { padding:140px 48px; text-align:center; position:relative; z-index:2; }
+  .cta h2 { font-size:clamp(48px,8vw,96px); font-weight:900; letter-spacing:-3px; margin-bottom:24px; }
+  .cta h2 span { color:var(--accent); font-style:italic; font-weight:400; }
+  .cta p { color:var(--muted); font-size:18px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:var(--accent); color:var(--bg); font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:600; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:40px 48px; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; position:relative; z-index:2; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .menu-grid{grid-template-columns:1fr;} .flip-grid{grid-template-columns:1fr;} .stats-grid{grid-template-columns:1fr 1fr;} nav{padding:20px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+<div class="progress" id="progress"></div>
+
+<nav>
+  <div class="logo">BIS<span>TRO</span></div>
+  <div class="nav-links">
+    <a href="#menu">Menu</a>
+    <a href="#wine">Wine</a>
+    <a href="#stats">Stats</a>
+    <a href="#reserve">Reserve</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg parallax-bg">
+    <img src="https://picsum.photos/seed/bistro-hero/1920/1080" alt="Bistro">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Modern European · NYC</div>
+    <h1>Simple food, <span class="it">done right.</span></h1>
+    <p class="hero-sub">A neighborhood bistro. Seasonal ingredients, natural wines, and warm hospitality.</p>
+    <div class="hero-cta">
+      <a href="#reserve" class="btn filled">Reserve</a>
+      <a href="#menu" class="btn ghost">Menu</a>
+    </div>
+  </div>
+</section>
+
+<section class="menu-section" id="menu">
+  <h2 class="reveal">The Menu</h2>
+  <div class="menu-grid">
+    <div class="menu-card"><div class="glow"></div><div class="name">Steak Frites</div><div class="desc">Grass-fed ribeye, hand-cut fries, béarnaise</div><div class="price">$38</div></div>
+    <div class="menu-card"><div class="glow"></div><div class="name">Moules Marinières</div><div class="desc">PEI mussels, white wine, garlic, frites</div><div class="price">$26</div></div>
+    <div class="menu-card"><div class="glow"></div><div class="name">Coq au Vin</div><div class="desc">Braised chicken, red wine, mushrooms, bacon</div><div class="price">$32</div></div>
+    <div class="menu-card"><div class="glow"></div><div class="name">Niçoise Salad</div><div class="desc">Tuna, egg, olives, green beans, potato</div><div class="price">$22</div></div>
+    <div class="menu-card"><div class="glow"></div><div class="name">Crème Brûlée</div><div class="desc">Vanilla bean custard, caramelized sugar</div><div class="price">$12</div></div>
+    <div class="menu-card"><div class="glow"></div><div class="name">Tarte Tatin</div><div class="desc">Caramelized apple, puff pastry, crème fraîche</div><div class="price">$14</div></div>
+  </div>
+</section>
+
+<section class="wine-section" id="wine">
+  <h2 class="reveal">Wine & Cocktails</h2>
+  <div class="flip-grid">
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍷</div><h3>Natural Wines</h3></div><div class="flip-back"><h3>Natural Wines</h3><p>Low-intervention wines from small producers. Ask your server for pairings.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍸</div><h3>Craft Cocktails</h3></div><div class="flip-back"><h3>Craft Cocktails</h3><p>Classic cocktails with a modern twist. Seasonal ingredients.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍺</div><h3>Local Beers</h3></div><div class="flip-back"><h3>Local Beers</h3><p>Rotating selection of craft beers from local breweries.</p></div></div></div>
+  </div>
+</section>
+
+<section class="stats">
+  <h2 class="reveal">By the numbers</h2>
+  <div class="stats-grid">
+    <div class="stat reveal"><div class="num" data-target="8">0</div><div class="lbl">Years</div></div>
+    <div class="stat reveal"><div class="num" data-target="40">0</div><div class="lbl">Dishes</div></div>
+    <div class="stat reveal"><div class="num" data-target="120">0</div><div class="lbl">Wines</div></div>
+    <div class="stat reveal"><div class="num" data-target="95">0</div><div class="lbl">% Satisfaction</div></div>
+  </div>
+</section>
+
+<section class="cta" id="reserve">
+  <h2 class="reveal">Reserve your <span>table.</span></h2>
+  <p class="reveal">Open daily · 5:00 PM – 11:00 PM</p>
+  <a href="tel:+12125550188" class="btn2 reveal">+1 (212) 555-0188</a>
+</section>
+
+<footer>
+  <div>© 2026 Bistro. All rights reserved.</div>
+  <div>88 Main St, New York · hello@bistro.com</div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor=document.getElementById('cursor'),ring=document.getElementById('ring');
+let mx=0,my=0,cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+function loop(){cx+=(mx-cx)*.2;cy+=(my-cy)*.2;rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cursor.style.left=cx+'px';cursor.style.top=cy+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);}
+loop();
+document.querySelectorAll('a,.menu-card,.flip-card,.btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.classList.add('hover');ring.classList.add('hover');});
+  el.addEventListener('mouseleave',()=>{cursor.classList.remove('hover');ring.classList.remove('hover');});
+});
+
+// Particles
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+for(let i=0;i<60;i++)particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+0.5,a:Math.random()*0.4+0.1});
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>canvas.width)p.vx*=-1;if(p.y<0||p.y>canvas.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(212,165,116,${p.a})`;ctx.fill();});
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// Parallax hero
+const heroBg=document.querySelector('.hero-bg');
+window.addEventListener('scroll',()=>{const y=window.scrollY;if(heroBg)heroBg.style.transform=`translateY(${y*.4}px)`;},{passive:true});
+
+// 3D tilt
+document.querySelectorAll('.menu-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    const x=e.clientX-rect.left,y=e.clientY-rect.top;
+    const cx=rect.width/2,cy=rect.height/2;
+    const rx=(y-cy)/cy*-12,ry=(x-cx)/cx*12;
+    card.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+    card.style.setProperty('--mx',(x/rect.width*100)+'%');
+    card.style.setProperty('--my',(y/rect.height*100)+'%');
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='perspective(800px) rotateX(0) rotateY(0) scale(1)';});
+});
+
+// Scroll progress
+const progress=document.getElementById('progress');
+window.addEventListener('scroll',()=>{const st=window.scrollY;const dh=document.documentElement.scrollHeight-window.innerHeight;progress.style.width=(st/dh*100)+'%';},{passive:true});
+
+// Counters
+const counterIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){const el=e.target;const target=+el.dataset.target;let cur=0;const step=()=>{cur+=Math.ceil(target/40);if(cur>=target){cur=target;el.textContent=target+'+';return;}el.textContent=cur+'+';requestAnimationFrame(step);};step();counterIO.unobserve(el);}
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-target]').forEach(el=>counterIO.observe(el));
+
+// Reveal
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

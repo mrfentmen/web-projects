@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sakura — Japanese Cuisine</title>
+<style>
+  :root { --bg:#0a0a0f; --fg:#f0f0f5; --muted:#7a7a8a; --accent:#ff6b9d; --accent2:#ffcc00; --accent3:#00d4ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  /* Mesh gradient bg */
+  .mesh-bg { position:fixed; inset:0; z-index:0; overflow:hidden; }
+  .mesh-blob { position:absolute; border-radius:50%; filter:blur(80px); opacity:.4; animation:meshMove 20s ease-in-out infinite; }
+  .mb1 { width:500px; height:500px; background:var(--accent); top:-10%; left:-10%; }
+  .mb2 { width:400px; height:400px; background:var(--accent2); top:30%; right:-10%; animation-delay:-7s; }
+  .mb3 { width:450px; height:450px; background:var(--accent3); bottom:-10%; left:20%; animation-delay:-14s; }
+  @keyframes meshMove { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(40px,-20px) scale(1.1)} 50%{transform:translate(-20px,40px) scale(0.9)} 75%{transform:translate(20px,20px) scale(1.05)} }
+
+  /* Kinetic text band */
+  .text-band { position:fixed; top:50%; left:0; right:0; transform:translateY(-50%); z-index:0; opacity:.05; pointer-events:none; overflow:hidden; white-space:nowrap; }
+  .text-band-track { display:inline-block; animation:bandScroll 20s linear infinite; font-size:clamp(80px,15vw,200px); font-weight:900; letter-spacing:-5px; }
+  .text-band-track span { margin:0 40px; }
+  @keyframes bandScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 48px; display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,.06); }
+  .logo { font-weight:700; font-size:20px; letter-spacing:2px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+
+  /* Hero */
+  .hero { min-height:100vh; position:relative; display:flex; align-items:center; justify-content:center; text-align:center; z-index:1; overflow:hidden; }
+  .hero h1 { font-size:clamp(56px,10vw,140px); font-weight:900; line-height:.9; letter-spacing:-4px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3)); -webkit-background-clip:text; background-clip:text; color:transparent; background-size:200% 200%; animation:gradShift 6s ease infinite; }
+  @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  .hero-sub { color:var(--muted); font-size:18px; max-width:560px; margin:24px auto 0; }
+  .hero-cta { margin-top:40px; display:flex; gap:16px; justify-content:center; }
+  .btn { padding:14px 32px; border:1px solid rgba(255,255,255,.2); font-size:13px; text-transform:uppercase; letter-spacing:2px; transition:all .3s; backdrop-filter:blur(8px); }
+  .btn:hover { background:var(--fg); color:var(--bg); }
+  .btn.filled { background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; }
+
+  /* Morphing SVG section */
+  .morph-section { padding:100px 48px; text-align:center; position:relative; z-index:1; }
+  .morph-section h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .morph-svg { width:200px; height:200px; margin:0 auto 40px; }
+  .morph-svg path { fill:none; stroke:var(--accent); stroke-width:2; animation:morphPath 4s ease-in-out infinite; }
+  @keyframes morphPath {
+    0%,100% { d: path("M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z"); }
+    50% { d: path("M100,40 C130,10 190,50 170,110 C150,170 110,190 80,160 C50,130 10,90 30,50 C50,10 70,70 100,40 Z"); }
+  }
+
+  /* Flip cards for menu */
+  .menu-section { padding:80px 48px 120px; position:relative; z-index:1; }
+  .menu-section h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; text-align:center; }
+  .flip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective:1200px; max-width:1100px; margin:0 auto; }
+  .flip-card { height:240px; perspective:1000px; cursor:pointer; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .7s; transform-style:preserve-3d; }
+  .flip-card:hover .flip-inner { transform:rotateY(180deg); }
+  .flip-front, .flip-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:center; }
+  .flip-front { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1); backdrop-filter:blur(10px); }
+  .flip-front .icon { font-size:36px; margin-bottom:12px; }
+  .flip-front h3 { font-size:20px; font-weight:700; }
+  .flip-front .price { color:var(--accent2); font-size:16px; margin-top:8px; }
+  .flip-back { background:linear-gradient(135deg,var(--accent),var(--accent3)); transform:rotateY(180deg); }
+  .flip-back h3 { font-size:18px; font-weight:700; margin-bottom:8px; }
+  .flip-back p { font-size:13px; opacity:.9; line-height:1.6; }
+
+  /* CTA */
+  .cta { padding:140px 48px; text-align:center; position:relative; z-index:1; }
+  .cta h2 { font-size:clamp(48px,8vw,96px); font-weight:900; letter-spacing:-3px; margin-bottom:24px; }
+  .cta h2 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .cta p { color:var(--muted); font-size:18px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:600; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:40px 48px; border-top:1px solid rgba(255,255,255,.06); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; position:relative; z-index:1; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .flip-grid{grid-template-columns:1fr;} nav{padding:20px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<div class="mesh-bg"></div>
+<div class="text-band">
+  <div class="text-band-track">
+    <span>SAKURA</span><span>SUSHI</span><span>RAMEN</span><span>SAKE</span><span>IZAKAYA</span><span>OMAKASE</span>
+    <span>SAKURA</span><span>SUSHI</span><span>RAMEN</span><span>SAKE</span><span>IZAKAYA</span><span>OMAKASE</span>
+  </div>
+</div>
+
+<nav>
+  <div class="logo">SA<span>KURA</span></div>
+  <div class="nav-links">
+    <a href="#menu">Menu</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Authentic <span>Japanese.</span></h1>
+  <p class="hero-sub">Traditional flavors, modern presentation. Sushi, ramen, and izakaya dishes crafted with precision.</p>
+  <div class="hero-cta">
+    <a href="#menu" class="btn filled">View menu</a>
+    <a href="#contact" class="btn">Reserve</a>
+  </div>
+</section>
+
+<section class="morph-section">
+  <h2 class="reveal">Our craft</h2>
+  <svg class="morph-svg" viewBox="0 0 200 200">
+    <path d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20 Z"/>
+  </svg>
+  <p style="color:var(--muted);max-width:500px;margin:0 auto;">Each dish is a work of art. Precision, tradition, and innovation in every bite.</p>
+</section>
+
+<section class="menu-section" id="menu">
+  <h2 class="reveal">Menu</h2>
+  <div class="flip-grid">
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍣</div><h3>Sushi Platter</h3><div class="price">$28</div></div><div class="flip-back"><h3>Sushi Platter</h3><p>Chef's selection of 12 pieces. Nigiri, sashimi, and rolls.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍜</div><h3>Tonkotsu Ramen</h3><div class="price">$18</div></div><div class="flip-back"><h3>Tonkotsu Ramen</h3><p>Rich pork bone broth, chashu, soft egg, nori.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🥩</div><h3>Wagyu A5</h3><div class="price">$65</div></div><div class="flip-back"><h3>Wagyu A5</h3><p>Premium Japanese beef, seared to perfection.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍤</div><h3>Tempura</h3><div class="price">$16</div></div><div class="flip-back"><h3>Tempura</h3><p>Light, crispy battered shrimp and vegetables.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍶</div><h3>Sake Flight</h3><div class="price">$24</div></div><div class="flip-back"><h3>Sake Flight</h3><p>Three premium sakes, curated by our sommelier.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🍡</div><h3>Mochi</h3><div class="price">$8</div></div><div class="flip-back"><h3>Mochi</h3><p>Soft rice cake with seasonal fillings.</p></div></div></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="reveal">Reserve your <span>table.</span></h2>
+  <p class="reveal">Open daily · 5:00 PM – 11:00 PM</p>
+  <a href="tel:+12125550199" class="btn2 reveal">+1 (212) 555-0199</a>
+</section>
+
+<footer>
+  <div>© 2026 Sakura. All rights reserved.</div>
+  <div>123 Main St, New York · hello@sakura.com</div>
+</footer>
+
+<script>
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
