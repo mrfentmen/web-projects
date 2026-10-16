@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fusion — Multi-Effect Showcase</title>
+<style>
+  :root { --bg:#08080c; --fg:#00ff41; --muted:#00aa2a; --accent:#00ff41; --accent2:#ff00cc; --accent3:#00d4ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"JetBrains Mono", "Courier New", monospace; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  /* Scanlines */
+  .scanlines { position:fixed; inset:0; z-index:100; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(0,0,0,.12) 0px,rgba(0,0,0,.12) 1px,transparent 1px,transparent 2px); }
+
+  /* Progress bar */
+  .progress { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3)); z-index:200; width:0%; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:101; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(8,8,12,.9); border-bottom:1px solid #1a2a1a; }
+  .logo { font-weight:700; font-size:16px; letter-spacing:2px; }
+  .logo span { color:var(--muted); }
+  .nav-links { display:flex; gap:24px; font-size:12px; text-transform:uppercase; letter-spacing:1px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-links a::before { content:"> "; color:var(--accent); }
+
+  /* Hero with 3D cube */
+  .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:100px 24px; position:relative; overflow:hidden; }
+  .cube-container { perspective:800px; width:200px; height:200px; margin-bottom:40px; }
+  .cube { width:100%; height:100%; position:relative; transform-style:preserve-3d; animation:rotateCube 8s linear infinite; }
+  .cube-face { position:absolute; width:200px; height:200px; border:1px solid rgba(0,255,65,.3); background:rgba(0,255,65,.05); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; }
+  .cube-face.front { transform:translateZ(100px); }
+  .cube-face.back { transform:rotateY(180deg) translateZ(100px); }
+  .cube-face.right { transform:rotateY(90deg) translateZ(100px); }
+  .cube-face.left { transform:rotateY(-90deg) translateZ(100px); }
+  .cube-face.top { transform:rotateX(90deg) translateZ(100px); }
+  .cube-face.bottom { transform:rotateX(-90deg) translateZ(100px); }
+  @keyframes rotateCube { from{transform:rotateX(0) rotateY(0)} to{transform:rotateX(360deg) rotateY(360deg)} }
+  .hero h1 { font-size:clamp(40px,8vw,96px); font-weight:700; line-height:1; letter-spacing:-2px; margin-bottom:16px; }
+  .hero h1 .grad { background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero-sub { color:var(--muted); font-size:14px; max-width:560px; margin:0 auto; line-height:1.8; }
+  .hero-sub::before { content:"> "; color:var(--accent); }
+
+  /* Morphing SVG */
+  .morph-section { padding:100px 48px; text-align:center; }
+  .morph-section h2 { font-size:24px; font-weight:700; margin-bottom:32px; }
+  .morph-section h2::before { content:"$ "; color:var(--accent); }
+  .morph-svg { width:300px; height:300px; margin:0 auto 40px; }
+  .morph-svg path { fill:none; stroke:var(--accent); stroke-width:2; animation:morphPath 4s ease-in-out infinite; }
+  @keyframes morphPath {
+    0%,100% { d: path("M150,30 C190,30 270,70 270,150 C270,230 190,270 150,270 C110,270 30,230 30,150 C30,70 110,30 150,30 Z"); }
+    50% { d: path("M150,50 C200,20 280,80 260,160 C240,240 180,280 140,260 C100,240 20,200 40,120 C60,40 100,80 150,50 Z"); }
+  }
+
+  /* Kinetic text band */
+  .text-band { padding:30px 0; overflow:hidden; white-space:nowrap; border-top:1px solid #1a2a1a; border-bottom:1px solid #1a2a1a; }
+  .text-band-track { display:inline-block; animation:bandScroll 15s linear infinite; font-size:clamp(24px,4vw,48px); font-weight:700; letter-spacing:-1px; }
+  .text-band-track span { margin:0 40px; color:var(--muted); }
+  .text-band-track span.accent { color:var(--accent); }
+  @keyframes bandScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* Commands grid */
+  .commands { padding:80px 48px; }
+  .commands h2 { font-size:24px; font-weight:700; margin-bottom:32px; }
+  .commands h2::before { content:"$ "; color:var(--accent); }
+  .cmd-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .cmd { background:var(--card); border:1px solid #1a2a1a; padding:20px; transition:border-color .2s; }
+  .cmd:hover { border-color:var(--accent); }
+  .cmd .name { color:var(--accent); font-size:14px; font-weight:700; margin-bottom:8px; }
+  .cmd .name::before { content:"> "; }
+  .cmd .desc { color:var(--muted); font-size:12px; line-height:1.6; }
+
+  /* Stats */
+  .stats { padding:60px 48px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px; border-top:1px solid #1a2a1a; border-bottom:1px solid #1a2a1a; }
+  .stat .num { font-size:32px; font-weight:700; color:var(--accent); }
+  .stat .lbl { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+
+  /* CTA */
+  .cta { padding:100px 48px; text-align:center; }
+  .cta h2 { font-size:clamp(32px,5vw,56px); font-weight:700; margin-bottom:24px; }
+  .cta h2::before { content:"> "; color:var(--accent); }
+  .cta p { color:var(--muted); font-size:14px; margin-bottom:32px; }
+  .cta p::before { content:"// "; }
+
+  footer { padding:24px 48px; border-top:1px solid #1a2a1a; display:flex; justify-content:space-between; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+
+  .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s,transform .6s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .cmd-grid{grid-template-columns:1fr;} .stats{grid-template-columns:1fr 1fr;} nav{padding:16px 24px;} .nav-links{display:none;} }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="scanlines"></div>
+<div class="progress" id="progress"></div>
+
+<nav>
+  <div class="logo">FU<span>SION</span></div>
+  <div class="nav-links">
+    <a href="#morph">Morph</a>
+    <a href="#commands">Commands</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="cube-container">
+    <div class="cube">
+      <div class="cube-face front">3D</div>
+      <div class="cube-face back">CSS</div>
+      <div class="cube-face right">WEB</div>
+      <div class="cube-face left">GL</div>
+      <div class="cube-face top">FX</div>
+      <div class="cube-face bottom">UI</div>
+    </div>
+  </div>
+  <h1>Multi-<span class="grad">effect.</span></h1>
+  <p class="hero-sub">3D cube + terminal theme + morphing SVG + kinetic text + scanlines. All in one.</p>
+</section>
+
+<div class="text-band">
+  <div class="text-band-track">
+    <span>3D CUBE</span><span class="accent">TERMINAL</span><span>MORPHING</span><span class="accent">KINETIC</span><span>SCANLINES</span><span class="accent">PROGRESS</span>
+    <span>3D CUBE</span><span class="accent">TERMINAL</span><span>MORPHING</span><span class="accent">KINETIC</span><span>SCANLINES</span><span class="accent">PROGRESS</span>
+  </div>
+</div>
+
+<section class="morph-section" id="morph">
+  <h2>Morphing shape</h2>
+  <svg class="morph-svg" viewBox="0 0 300 300">
+    <path d="M150,30 C190,30 270,70 270,150 C270,230 190,270 150,270 C110,270 30,230 30,150 C30,70 110,30 150,30 Z"/>
+  </svg>
+</section>
+
+<section class="commands" id="commands">
+  <h2>Available effects</h2>
+  <div class="cmd-grid">
+    <div class="cmd"><div class="name">cube</div><div class="desc">3D rotating cube with CSS transforms.</div></div>
+    <div class="cmd"><div class="name">terminal</div><div class="desc">Hacker theme with CRT scanlines.</div></div>
+    <div class="cmd"><div class="name">morph</div><div class="desc">SVG path morphing animation.</div></div>
+    <div class="cmd"><div class="name">kinetic</div><div class="desc">Animated scrolling text band.</div></div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="num">4</div><div class="lbl">Effects</div></div>
+  <div class="stat"><div class="num">1</div><div class="lbl">File</div></div>
+  <div class="stat"><div class="num">0</div><div class="lbl">Dependencies</div></div>
+  <div class="stat"><div class="num">60fps</div><div class="lbl">Performance</div></div>
+</div>
+
+<section class="cta" id="contact">
+  <h2>Execute.</h2>
+  <p>// Ready when you are.</p>
+  <a href="mailto:hello@fusion.dev" class="btn filled">./contact.sh</a>
+</section>
+
+<footer>
+  <div>© 2026 Fusion. All rights reserved.</div>
+  <div>hello@fusion.dev</div>
+</footer>
+
+<script>
+// Scroll progress
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.width = (scrollTop / docHeight * 100) + '%';
+}, { passive: true });
+
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.cmd').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

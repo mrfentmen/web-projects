@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus — All-in-One Experience</title>
+<style>
+  :root { --bg:#050508; --fg:#f0f0f5; --muted:#7a7a8a; --accent:#7c5cff; --accent2:#3dd6f5; --accent3:#ff5cff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; cursor:none; }
+  a { color:inherit; text-decoration:none; }
+
+  /* Custom cursor */
+  .cursor { position:fixed; width:14px; height:14px; border-radius:50%; background:var(--fg); pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:difference; transition:width .25s,height .25s; }
+  .cursor-ring { position:fixed; width:40px; height:40px; border:1px solid rgba(255,255,255,.4); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s; }
+  .cursor.hover { width:60px; height:60px; }
+  .cursor-ring.hover { width:80px; height:80px; border-color:var(--accent); }
+
+  /* Particle canvas */
+  #particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  /* Mesh blobs */
+  .blob { position:fixed; border-radius:50%; filter:blur(80px); opacity:.4; animation:meshMove 20s ease-in-out infinite; pointer-events:none; z-index:0; }
+  .blob1 { width:600px; height:600px; background:var(--accent); top:-10%; left:-10%; }
+  .blob2 { width:500px; height:500px; background:var(--accent2); top:20%; right:-15%; animation-delay:-5s; }
+  .blob3 { width:450px; height:450px; background:var(--accent3); bottom:-10%; left:30%; animation-delay:-10s; }
+  @keyframes meshMove { 0%,100%{transform:translate(0,0) scale(1)} 25%{transform:translate(50px,-30px) scale(1.1)} 50%{transform:translate(-30px,50px) scale(0.9)} 75%{transform:translate(30px,30px) scale(1.05)} }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:24px 48px; display:flex; justify-content:space-between; align-items:center; mix-blend-mode:difference; }
+  .logo { font-weight:900; font-size:22px; letter-spacing:-1px; }
+  .logo span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { opacity:.7; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; }
+
+  /* Hero */
+  .hero { min-height:100vh; position:relative; display:flex; flex-direction:column; justify-content:center; padding:0 48px; z-index:1; }
+  .hero h1 { font-size:clamp(60px,13vw,180px); font-weight:900; line-height:.85; letter-spacing:-5px; }
+  .hero h1 .line { display:block; overflow:hidden; }
+  .hero h1 .line span { display:inline-block; transform:translateY(110%); animation:reveal 1.2s cubic-bezier(.2,.8,.2,1) forwards; }
+  .hero h1 .line:nth-child(2) span { animation-delay:.15s; }
+  .hero h1 .line:nth-child(3) span { animation-delay:.3s; background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  @keyframes reveal { to { transform:translateY(0); } }
+  .hero-sub { margin-top:32px; color:var(--muted); font-size:18px; max-width:520px; opacity:0; animation:fadeUp 1s .7s forwards; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .hero-cta { margin-top:40px; display:flex; gap:16px; opacity:0; animation:fadeUp 1s .9s forwards; }
+  .btn { padding:14px 32px; border:1px solid rgba(255,255,255,.2); font-size:13px; text-transform:uppercase; letter-spacing:2px; transition:all .3s; backdrop-filter:blur(8px); }
+  .btn:hover { background:var(--fg); color:var(--bg); }
+  .btn.filled { background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; }
+
+  /* 3D tilt cards */
+  .tilt-section { padding:120px 48px; position:relative; z-index:1; }
+  .tilt-section h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .tilt-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective:1200px; }
+  .tilt-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:40px 32px; position:relative; overflow:hidden; transform-style:preserve-3d; transition:transform .1s; will-change:transform; backdrop-filter:blur(10px); }
+  .tilt-card .glow { position:absolute; inset:0; opacity:0; transition:opacity .3s; background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(124,92,255,.25), transparent 60%); pointer-events:none; }
+  .tilt-card:hover .glow { opacity:1; }
+  .tilt-card .num { font-size:12px; color:var(--accent2); letter-spacing:3px; margin-bottom:24px; }
+  .tilt-card h3 { font-size:26px; font-weight:700; margin-bottom:12px; transform:translateZ(30px); }
+  .tilt-card p { color:var(--muted); font-size:14px; line-height:1.6; transform:translateZ(20px); }
+
+  /* Flip cards */
+  .flip-section { padding:80px 48px 120px; }
+  .flip-section h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .flip-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; perspective:1200px; }
+  .flip-card { height:240px; perspective:1000px; cursor:pointer; }
+  .flip-inner { position:relative; width:100%; height:100%; transition:transform .7s; transform-style:preserve-3d; }
+  .flip-card:hover .flip-inner { transform:rotateY(180deg); }
+  .flip-front, .flip-back { position:absolute; inset:0; backface-visibility:hidden; border-radius:16px; padding:24px; display:flex; flex-direction:column; justify-content:center; }
+  .flip-front { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1); }
+  .flip-front .icon { font-size:36px; margin-bottom:12px; }
+  .flip-front h3 { font-size:20px; font-weight:700; }
+  .flip-back { background:linear-gradient(135deg,var(--accent),var(--accent2)); transform:rotateY(180deg); }
+  .flip-back h3 { font-size:18px; font-weight:700; margin-bottom:8px; }
+  .flip-back p { font-size:13px; opacity:.9; }
+
+  /* Stats */
+  .stats-section { padding:100px 48px; text-align:center; }
+  .stats-section h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:64px; }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; max-width:1000px; margin:0 auto; }
+  .stat .num { font-size:clamp(40px,6vw,72px); font-weight:900; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stat .lbl { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:2px; margin-top:8px; }
+
+  /* Marquee */
+  .marquee { border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); padding:16px 0; overflow:hidden; white-space:nowrap; }
+  .marquee-track { display:inline-block; animation:marquee 20s linear infinite; font-size:13px; text-transform:uppercase; letter-spacing:3px; color:var(--muted); }
+  .marquee-track span { margin:0 40px; }
+  @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* CTA */
+  .cta { padding:140px 48px; text-align:center; position:relative; z-index:1; }
+  .cta h2 { font-size:clamp(48px,8vw,96px); font-weight:900; letter-spacing:-3px; margin-bottom:24px; }
+  .cta h2 span { background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .cta p { color:var(--muted); font-size:18px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:600; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:40px 48px; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; position:relative; z-index:1; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .tilt-grid{grid-template-columns:1fr;} .flip-grid{grid-template-columns:1fr;} .stats-grid{grid-template-columns:1fr 1fr;} nav{padding:20px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="ring"></div>
+
+<nav>
+  <div class="logo">NE<span>XUS</span></div>
+  <div class="nav-links">
+    <a href="#tilt">Tilt</a>
+    <a href="#flip">Flip</a>
+    <a href="#stats">Stats</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>
+    <span class="line"><span>Everything</span></span>
+    <span class="line"><span>in one</span></span>
+    <span class="line"><span>place.</span></span>
+  </h1>
+  <p class="hero-sub">Particles, 3D tilt, flip cards, mesh gradients, and animated counters — all in one experience.</p>
+  <div class="hero-cta">
+    <a href="#tilt" class="btn filled">Explore</a>
+    <a href="#contact" class="btn">Get started</a>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Particles</span><span>3D Tilt</span><span>Flip Cards</span><span>Mesh Gradient</span><span>Counters</span><span>Cursor</span>
+    <span>Particles</span><span>3D Tilt</span><span>Flip Cards</span><span>Mesh Gradient</span><span>Counters</span><span>Cursor</span>
+  </div>
+</div>
+
+<section class="tilt-section" id="tilt">
+  <h2 class="reveal">3D Tilt Cards</h2>
+  <div class="tilt-grid">
+    <div class="tilt-card"><div class="glow"></div><div class="num">01</div><h3>Design</h3><p>Brand identity and visual systems.</p></div>
+    <div class="tilt-card"><div class="glow"></div><div class="num">02</div><h3>Development</h3><p>Full-stack web applications.</p></div>
+    <div class="tilt-card"><div class="glow"></div><div class="num">03</div><h3>Strategy</h3><p>Business and digital strategy.</p></div>
+  </div>
+</section>
+
+<section class="flip-section" id="flip">
+  <h2 class="reveal">Flip Cards</h2>
+  <div class="flip-grid">
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">🎨</div><h3>Design</h3></div><div class="flip-back"><h3>Design</h3><p>Brand, UI/UX, and visual design.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">💻</div><h3>Code</h3></div><div class="flip-back"><h3>Code</h3><p>React, Next.js, and Node.js.</p></div></div></div>
+    <div class="flip-card"><div class="flip-inner"><div class="flip-front"><div class="icon">📈</div><h3>Growth</h3></div><div class="flip-back"><h3>Growth</h3><p>SEO, marketing, and analytics.</p></div></div></div>
+  </div>
+</section>
+
+<section class="stats-section" id="stats">
+  <h2 class="reveal">By the numbers</h2>
+  <div class="stats-grid">
+    <div class="stat reveal"><div class="num" data-target="250">0</div><div class="lbl">Projects</div></div>
+    <div class="stat reveal"><div class="num" data-target="80">0</div><div class="lbl">Clients</div></div>
+    <div class="stat reveal"><div class="num" data-target="15">0</div><div class="lbl">Awards</div></div>
+    <div class="stat reveal"><div class="num" data-target="10">0</div><div class="lbl">Years</div></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="reveal">All in <span>one.</span></h2>
+  <p class="reveal">Everything you need in a single experience.</p>
+  <a href="mailto:hello@nexus.com" class="btn2 reveal">Get started →</a>
+</section>
+
+<footer>
+  <div>© 2026 Nexus. All rights reserved.</div>
+  <div>hello@nexus.com</div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor=document.getElementById('cursor'),ring=document.getElementById('ring');
+let mx=0,my=0,cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+function loop(){cx+=(mx-cx)*.2;cy+=(my-cy)*.2;rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cursor.style.left=cx+'px';cursor.style.top=cy+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);}
+loop();
+document.querySelectorAll('a,.tilt-card,.flip-card,.btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.classList.add('hover');ring.classList.add('hover');});
+  el.addEventListener('mouseleave',()=>{cursor.classList.remove('hover');ring.classList.remove('hover');});
+});
+
+// Particles
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resizeCanvas();window.addEventListener('resize',resizeCanvas);
+for(let i=0;i<80;i++)particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.5+0.5,a:Math.random()*0.5+0.2});
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>canvas.width)p.vx*=-1;if(p.y<0||p.y>canvas.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(124,92,255,${p.a})`;ctx.fill();});
+  for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(124,92,255,${0.15*(1-dist/120)})`;ctx.lineWidth=0.5;ctx.stroke();}}
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// 3D tilt
+document.querySelectorAll('.tilt-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    const x=e.clientX-rect.left,y=e.clientY-rect.top;
+    const cx=rect.width/2,cy=rect.height/2;
+    const rx=(y-cy)/cy*-15,ry=(x-cx)/cx*15;
+    card.style.transform=`perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+    card.style.setProperty('--mx',(x/rect.width*100)+'%');
+    card.style.setProperty('--my',(y/rect.height*100)+'%');
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='perspective(800px) rotateX(0) rotateY(0) scale(1)';});
+});
+
+// Counters
+const counterIO=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){const el=e.target;const target=+el.dataset.target;let cur=0;const step=()=>{cur+=Math.ceil(target/40);if(cur>=target){cur=target;el.textContent=target+'+';return;}el.textContent=cur+'+';requestAnimationFrame(step);};step();counterIO.unobserve(el);}
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-target]').forEach(el=>counterIO.observe(el));
+
+// Reveal
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
