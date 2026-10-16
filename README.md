@@ -1,6 +1,6 @@
 # Web Projects Collection
 
-A collection of 25+ hand-crafted website designs built with pure HTML, CSS, and JavaScript. Each site is a single self-contained HTML file — no build step, no dependencies, just open in a browser.
+A collection of 32+ hand-crafted website designs built with pure HTML, CSS, and JavaScript. Each site is a single self-contained HTML file — no build step, no dependencies, just open in a browser.
 
 ## Categories
 
@@ -30,14 +30,29 @@ A collection of 25+ hand-crafted website designs built with pure HTML, CSS, and 
 - **scrolly.html** — Scrollytelling experience
 - **flipcards.html** — 3D flip cards
 - **mesh.html** — Animated mesh gradient
+- **morph.html** — SVG path morphing animations
+- **depth.html** — Multi-layer parallax with mouse tracking
+- **terminal.html** — Hacker/terminal themed site with CRT scanlines
+- **kinetic.html** — Kinetic typography with animated words
 
 ### Product & Portfolio
 - **productlaunch.html** — Product launch (Apex Phone)
 - **photography.html** — Photography portfolio with masonry grid
 
+### Combo (Multi-Effect)
+- **nexus.html** — Particles + 3D tilt + flip cards + mesh gradient + counters
+- **fusion.html** — 3D cube + terminal + morphing SVG + kinetic text + scanlines
+- **aurora.html** — Starfield + mesh gradient + flip cards + orbital planets + scroll progress
+
 ## Usage
 
 Each file is self-contained. Just open any `.html` file in your browser. No build step required.
+
+## Live Preview
+
+Enable GitHub Pages: Settings → Pages → Source: main branch → / (root)
+
+Then visit: `https://mrfentmen.github.io/web-projects/<filename>.html`
 
 ## License
 
