@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cube — 3D Product Showcase</title>
+<style>
+  :root { --bg:#0a0a0f; --fg:#f0f0f5; --muted:#7a7a8a; --accent:#00ff88; --accent2:#0088ff; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:24px 48px; display:flex; justify-content:space-between; align-items:center; mix-blend-mode:difference; }
+  .logo { font-weight:900; font-size:22px; letter-spacing:-1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; }
+  .nav-links a { opacity:.7; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; }
+
+  /* 3D scene */
+  .scene { min-height:100vh; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .scene-bg { position:absolute; inset:0; background:radial-gradient(ellipse at center,rgba(0,255,136,.08) 0%,transparent 60%); }
+  .cube-container { perspective:1000px; width:300px; height:300px; position:relative; z-index:2; }
+  .cube { width:100%; height:100%; position:relative; transform-style:preserve-3d; animation:rotateCube 12s linear infinite; }
+  .cube.paused { animation-play-state:paused; }
+  .cube-face { position:absolute; width:300px; height:300px; border:2px solid rgba(0,255,136,.3); background:rgba(0,255,136,.05); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; color:var(--accent); }
+  .cube-face.front { transform:translateZ(150px); }
+  .cube-face.back { transform:rotateY(180deg) translateZ(150px); }
+  .cube-face.right { transform:rotateY(90deg) translateZ(150px); }
+  .cube-face.left { transform:rotateY(-90deg) translateZ(150px); }
+  .cube-face.top { transform:rotateX(90deg) translateZ(150px); }
+  .cube-face.bottom { transform:rotateX(-90deg) translateZ(150px); }
+  @keyframes rotateCube { from{transform:rotateX(0) rotateY(0)} to{transform:rotateX(360deg) rotateY(360deg)} }
+  .cube-controls { position:absolute; bottom:60px; left:50%; transform:translateX(-50%); display:flex; gap:12px; z-index:3; }
+  .cube-btn { padding:10px 20px; border:1px solid rgba(0,255,136,.3); background:rgba(0,255,136,.05); color:var(--accent); font-size:12px; text-transform:uppercase; letter-spacing:2px; cursor:pointer; transition:all .2s; }
+  .cube-btn:hover { background:var(--accent); color:var(--bg); }
+  .scene-text { position:absolute; bottom:140px; left:50%; transform:translateX(-50%); text-align:center; z-index:3; }
+  .scene-text h1 { font-size:clamp(40px,7vw,80px); font-weight:900; letter-spacing:-2px; }
+  .scene-text h1 span { color:var(--accent); }
+  .scene-text p { color:var(--muted); margin-top:12px; font-size:16px; }
+
+  /* Features */
+  .features { padding:120px 48px; }
+  .features h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .feat { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:32px; transition:transform .3s,border-color .3s; }
+  .feat:hover { transform:translateY(-6px); border-color:var(--accent); }
+  .feat .icon { font-size:32px; margin-bottom:16px; }
+  .feat h3 { font-size:20px; font-weight:700; margin-bottom:8px; }
+  .feat p { color:var(--muted); font-size:14px; line-height:1.6; }
+
+  /* Specs */
+  .specs { padding:120px 48px; background:rgba(255,255,255,.02); }
+  .specs h2 { font-size:clamp(36px,5vw,64px); font-weight:800; letter-spacing:-2px; margin-bottom:48px; }
+  .spec-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; max-width:900px; }
+  .spec { display:flex; justify-content:space-between; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+  .spec .label { color:var(--muted); font-size:14px; }
+  .spec .value { font-weight:600; color:var(--accent); }
+
+  /* CTA */
+  .cta { padding:140px 48px; text-align:center; }
+  .cta h2 { font-size:clamp(48px,8vw,110px); font-weight:900; letter-spacing:-3px; line-height:.9; margin-bottom:24px; }
+  .cta h2 span { color:var(--accent); }
+  .cta p { color:var(--muted); font-size:18px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:var(--accent); color:var(--bg); font-size:14px; text-transform:uppercase; letter-spacing:2px; font-weight:700; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:40px 48px; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .feat-grid{grid-template-columns:1fr;} .spec-grid{grid-template-columns:1fr;} nav{padding:20px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">CU<span>BE</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#specs">Specs</a>
+    <a href="#buy">Buy</a>
+  </div>
+</nav>
+
+<section class="scene">
+  <div class="scene-bg"></div>
+  <div class="cube-container">
+    <div class="cube" id="cube">
+      <div class="cube-face front">CUBE</div>
+      <div class="cube-face back">3D</div>
+      <div class="cube-face right">WEB</div>
+      <div class="cube-face left">GL</div>
+      <div class="cube-face top">CSS</div>
+      <div class="cube-face bottom">3D</div>
+    </div>
+  </div>
+  <div class="scene-text">
+    <h1>See it in <span>3D.</span></h1>
+    <p>Interactive 3D product showcase powered by CSS transforms.</p>
+  </div>
+  <div class="cube-controls">
+    <button class="cube-btn" id="pauseBtn">Pause</button>
+    <button class="cube-btn" id="speedBtn">Speed up</button>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <h2 class="reveal">Features</h2>
+  <div class="feat-grid">
+    <div class="feat reveal"><div class="icon">🎯</div><h3>Precision</h3><p>Pixel-perfect rendering across all devices.</p></div>
+    <div class="feat reveal"><div class="icon">⚡</div><h3>Performance</h3><p>Hardware-accelerated 3D transforms.</p></div>
+    <div class="feat reveal"><div class="icon">🎨</div><h3>Customizable</h3><p>Easy to theme and extend.</p></div>
+  </div>
+</section>
+
+<section class="specs" id="specs">
+  <h2 class="reveal">Specifications</h2>
+  <div class="spec-grid">
+    <div class="spec"><span class="label">Dimensions</span><span class="value">300 × 300 × 300</span></div>
+    <div class="spec"><span class="label">Faces</span><span class="value">6</span></div>
+    <div class="spec"><span class="label">Animation</span><span class="value">CSS 3D</span></div>
+    <div class="spec"><span class="label">Performance</span><span class="value">60 FPS</span></div>
+    <div class="spec"><span class="label">Browser support</span><span class="value">All modern</span></div>
+    <div class="spec"><span class="label">Dependencies</span><span class="value">None</span></div>
+  </div>
+</section>
+
+<section class="cta" id="buy">
+  <h2 class="reveal">Get the <span>cube.</span></h2>
+  <p class="reveal">Start building 3D experiences today.</p>
+  <a href="mailto:hello@cube.dev" class="btn2 reveal">Get started →</a>
+</section>
+
+<footer>
+  <div>© 2026 Cube. All rights reserved.</div>
+  <div>hello@cube.dev</div>
+</footer>
+
+<script>
+const cube = document.getElementById('cube');
+let paused = false, speed = 1;
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  paused = !paused;
+  cube.classList.toggle('paused', paused);
+  document.getElementById('pauseBtn').textContent = paused ? 'Play' : 'Pause';
+});
+document.getElementById('speedBtn').addEventListener('click', () => {
+  speed = speed === 1 ? 2 : speed === 2 ? 0.5 : 1;
+  cube.style.animationDuration = (12/speed) + 's';
+  document.getElementById('speedBtn').textContent = speed === 2 ? 'Slow down' : speed === 0.5 ? 'Normal' : 'Speed up';
+});
+// Mouse parallax on cube
+document.addEventListener('mousemove', e => {
+  const x = (e.clientX/window.innerWidth - 0.5)*20;
+  const y = (e.clientY/window.innerHeight - 0.5)*20;
+  if(!paused) cube.style.transform = `rotateX(${y}deg) rotateY(${x}deg)`;
+});
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

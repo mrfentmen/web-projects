@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1117; --panel: #161922; --border: #232734;
+    --text: #e6e8eb; --muted: #8b9099; --accent: #4f8cff; --green: #34d399; --red: #f87171; --amber: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Inter", sans-serif; background: var(--bg); color: var(--text); }
+  .layout { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+  aside {
+    background: var(--panel); border-right: 1px solid var(--border); padding: 20px 16px;
+  }
+  .brand { font-weight: 800; font-size: 18px; margin-bottom: 24px; }
+  .brand span { color: var(--accent); }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+    color: var(--muted); font-size: 14px; cursor: pointer; margin-bottom: 4px; transition: all .15s;
+  }
+  .nav-item:hover { background: rgba(79,140,255,.08); color: var(--text); }
+  .nav-item.active { background: rgba(79,140,255,.15); color: var(--text); }
+  main { padding: 24px 32px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  h1 { font-size: 24px; font-weight: 700; }
+  .controls { display: flex; gap: 10px; }
+  select, button {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; font-size: 13px; cursor: pointer;
+  }
+  button.primary { background: var(--accent); border: none; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+  .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  .kpi .value { font-size: 28px; font-weight: 700; margin: 6px 0; }
+  .kpi .delta { font-size: 13px; }
+  .delta.up { color: var(--green); } .delta.down { color: var(--red); }
+  .charts { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .chart-card h3 { font-size: 14px; color: var(--muted); margin-bottom: 12px; font-weight: 500; }
+  canvas { width: 100%; height: 220px; }
+  .table-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 500; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .status { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; }
+  .status.active { background: rgba(52,211,153,.15); color: var(--green); }
+  .status.pending { background: rgba(251,191,36,.15); color: var(--amber); }
+  .status.failed { background: rgba(248,113,113,.15); color: var(--red); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } aside { display: none; } .charts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">Data<span>Flow</span></div>
+    <div class="nav-item active">📊 Overview</div>
+    <div class="nav-item">👥 Users</div>
+    <div class="nav-item">💰 Revenue</div>
+    <div class="nav-item">📈 Funnels</div>
+    <div class="nav-item">⚙️ Settings</div>
+  </aside>
+  <main>
+    <header>
+      <h1>Overview</h1>
+      <div class="controls">
+        <select><option>Last 7 days</option><option>Last 30 days</option><option>Last 90 days</option></select>
+        <button class="primary">Export</button>
+      </div>
+    </header>
+    <div class="kpis">
+      <div class="kpi"><div class="label">Revenue</div><div class="value">$48,290</div><div class="delta up">↑ 12.4%</div></div>
+      <div class="kpi"><div class="label">Active users</div><div class="value">12,847</div><div class="delta up">↑ 8.1%</div></div>
+      <div class="kpi"><div class="label">Conversion</div><div class="value">3.24%</div><div class="delta down">↓ 0.3%</div></div>
+      <div class="kpi"><div class="label">Churn</div><div class="value">1.8%</div><div class="delta up">↓ 0.5%</div></div>
+    </div>
+    <div class="charts">
+      <div class="chart-card">
+        <h3>Revenue over time</h3>
+        <canvas id="line"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Traffic sources</h3>
+        <canvas id="donut"></canvas>
+      </div>
+    </div>
+    <div class="table-card">
+      <h3 style="margin-bottom:12px;font-size:14px;color:var(--muted);font-weight:500;">Recent transactions</h3>
+      <table>
+        <thead><tr><th>Customer</th><th>Plan</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td>Acme Corp</td><td>Pro</td><td>$499</td><td><span class="status active">Active</span></td><td>Oct 16</td></tr>
+          <tr><td>Globex</td><td>Enterprise</td><td>$2,400</td><td><span class="status active">Active</span></td><td>Oct 15</td></tr>
+          <tr><td>Initech</td><td>Starter</td><td>$49</td><td><span class="status pending">Pending</span></td><td>Oct 15</td></tr>
+          <tr><td>Umbrella</td><td>Pro</td><td>$499</td><td><span class="status failed">Failed</span></td><td>Oct 14</td></tr>
+          <tr><td>Stark Ind.</td><td>Enterprise</td><td>$2,400</td><td><span class="status active">Active</span></td><td>Oct 14</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+<script>
+const line = document.getElementById('line');
+const ctx = line.getContext('2d');
+function resize(c){const dpr=window.devicePixelRatio||1;c.width=c.clientWidth*dpr;c.height=c.clientHeight*dpr;ctx.scale(dpr,dpr);}
+resize(line);
+const data = [12,18,14,22,28,24,32,30,38,42,36,48];
+const w=line.clientWidth,h=line.clientHeight;
+const pad=20; const max=Math.max(...data); const min=Math.min(...data);
+ctx.strokeStyle='#4f8cff'; ctx.lineWidth=2.5; ctx.beginPath();
+data.forEach((v,i)=>{const x=pad+(w-2*pad)*i/(data.length-1);const y=h-pad-(h-2*pad)*(v-min)/(max-min); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+ctx.stroke();
+// fill
+const grad=ctx.createLinearGradient(0,0,0,h); grad.addColorStop(0,'rgba(79,140,255,.25)'); grad.addColorStop(1,'rgba(79,140,255,0)');
+ctx.lineTo(w-pad,h-pad); ctx.lineTo(pad,h-pad); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+// grid
+ctx.strokeStyle='#232734'; ctx.lineWidth=1;
+for(let i=0;i<4;i++){const y=pad+(h-2*pad)*i/3; ctx.beginPath(); ctx.moveTo(pad,y); ctx.lineTo(w-pad,y); ctx.stroke();}
+
+const donut=document.getElementById('donut');
+const dctx=donut.getContext('2d');
+const ddpr=window.devicePixelRatio||1; donut.width=donut.clientWidth*ddpr; donut.height=donut.clientHeight*ddpr; dctx.scale(ddpr,ddpr);
+const segs=[{v:45,c:'#4f8cff'},{v:25,c:'#34d399'},{v:20,c:'#fbbf24'},{v:10,c:'#f87171'}];
+const total=segs.reduce((a,b)=>a+b.v,0);
+let ang=-Math.PI/2; const cx=donut.clientWidth/2,cy=donut.clientHeight/2,r=70;
+segs.forEach(s=>{const a=s.v/total*Math.PI*2; dctx.beginPath(); dctx.moveTo(cx,cy); dctx.arc(cx,cy,r,ang,ang+a); dctx.closePath(); dctx.fillStyle=s.c; dctx.fill(); ang+=a;});
+dctx.beginPath(); dctx.arc(cx,cy,40,0,Math.PI*2); dctx.fillStyle='#161922'; dctx.fill();
+</script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma — Architecture & Design Studio</title>
+<style>
+  :root { --bg:#f5f2ec; --fg:#1a1814; --muted:#6b6558; --accent:#8c6a3f; --line:#d9d3c7; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
+  img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  a { color: inherit; text-decoration: none; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 28px 48px; display: flex; justify-content: space-between; align-items: center;
+    background: linear-gradient(180deg, var(--bg) 0%, transparent 100%);
+  }
+  .logo { font-weight: 800; font-size: 16px; letter-spacing: 4px; }
+  .nav-links { display: flex; gap: 32px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; }
+  .nav-links a { position: relative; padding-bottom: 4px; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 1px; background: var(--fg); transition: width .3s; }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* Hero with parallax */
+  .hero { height: 100vh; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 0 48px 80px; }
+  .hero-bg { position: absolute; inset: -15% 0; will-change: transform; }
+  .hero-bg img { filter: brightness(.85) contrast(1.05); }
+  .hero-content { position: relative; z-index: 2; max-width: 900px; }
+  .hero-eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 4px; color: var(--accent); margin-bottom: 24px; }
+  .hero h1 { font-size: clamp(56px, 10vw, 140px); font-weight: 300; line-height: 0.95; letter-spacing: -3px; }
+  .hero h1 strong { font-weight: 700; }
+  .hero-bottom { position: absolute; bottom: 40px; right: 48px; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); z-index: 2; text-align: right; }
+  .hero-bottom .num { font-size: 48px; font-weight: 300; color: var(--fg); display: block; line-height: 1; margin-bottom: 4px; }
+
+  /* Intro */
+  .intro { padding: 140px 48px; display: grid; grid-template-columns: 1fr 2fr; gap: 80px; border-top: 1px solid var(--line); }
+  .intro-label { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); padding-top: 8px; }
+  .intro-text h2 { font-size: clamp(28px, 3.5vw, 44px); font-weight: 300; line-height: 1.3; letter-spacing: -1px; }
+  .intro-text h2 strong { font-weight: 600; }
+  .intro-text p { color: var(--muted); margin-top: 24px; max-width: 600px; line-height: 1.7; font-size: 15px; }
+
+  /* Horizontal scroll portfolio */
+  .portfolio-section { padding: 80px 0 120px; }
+  .portfolio-header { padding: 0 48px 40px; display: flex; justify-content: space-between; align-items: end; }
+  .portfolio-header h2 { font-size: clamp(32px, 4vw, 56px); font-weight: 300; letter-spacing: -1.5px; }
+  .portfolio-header .hint { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); }
+  .hscroll { display: flex; gap: 24px; padding: 0 48px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; cursor: grab; }
+  .hscroll::-webkit-scrollbar { display: none; }
+  .project-card { flex: 0 0 70vw; max-width: 900px; scroll-snap-align: start; }
+  .project-card .img { height: 520px; overflow: hidden; position: relative; }
+  .project-card .img img { transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+  .project-card:hover .img img { transform: scale(1.06); }
+  .project-card .meta { padding: 20px 0 0; display: flex; justify-content: space-between; align-items: baseline; }
+  .project-card .title { font-size: 24px; font-weight: 500; letter-spacing: -0.5px; }
+  .project-card .loc { color: var(--muted); font-size: 13px; }
+  .project-card .year { color: var(--accent); font-size: 13px; }
+
+  /* Parallax feature */
+  .feature { display: grid; grid-template-columns: 1fr 1fr; min-height: 80vh; }
+  .feature-img { position: relative; overflow: hidden; }
+  .feature-img .parallax-bg { position: absolute; inset: -20% 0; }
+  .feature-img .parallax-bg img { filter: grayscale(.2); }
+  .feature-text { padding: 80px 64px; display: flex; flex-direction: column; justify-content: center; background: var(--bg); }
+  .feature-text .num { font-size: 12px; color: var(--accent); letter-spacing: 3px; margin-bottom: 24px; }
+  .feature-text h3 { font-size: clamp(28px, 3vw, 40px); font-weight: 300; line-height: 1.2; letter-spacing: -1px; margin-bottom: 20px; }
+  .feature-text p { color: var(--muted); line-height: 1.7; max-width: 420px; margin-bottom: 32px; }
+  .feature-text .btn { align-self: flex-start; padding: 12px 28px; border: 1px solid var(--fg); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; transition: all .3s; }
+  .feature-text .btn:hover { background: var(--fg); color: var(--bg); }
+
+  /* Services */
+  .services { padding: 120px 48px; border-top: 1px solid var(--line); }
+  .services-header { margin-bottom: 64px; }
+  .services-header h2 { font-size: clamp(32px, 4vw, 56px); font-weight: 300; letter-spacing: -1.5px; }
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .service { padding: 32px 0; border-top: 1px solid var(--line); }
+  .service .num { font-size: 12px; color: var(--accent); letter-spacing: 2px; margin-bottom: 16px; }
+  .service h4 { font-size: 20px; font-weight: 500; margin-bottom: 12px; }
+  .service p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* Team */
+  .team { padding: 120px 48px; background: #ece8df; }
+  .team-header { margin-bottom: 64px; }
+  .team-header h2 { font-size: clamp(32px, 4vw, 56px); font-weight: 300; letter-spacing: -1.5px; }
+  .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .member .img { height: 360px; overflow: hidden; margin-bottom: 16px; }
+  .member .img img { transition: transform .6s; filter: grayscale(.3); }
+  .member:hover .img img { transform: scale(1.05); filter: grayscale(0); }
+  .member .name { font-size: 16px; font-weight: 500; }
+  .member .role { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  /* Contact / footer */
+  .contact { padding: 140px 48px; text-align: center; }
+  .contact h2 { font-size: clamp(40px, 7vw, 100px); font-weight: 300; letter-spacing: -2px; line-height: 1; margin-bottom: 32px; }
+  .contact h2 em { font-style: italic; color: var(--accent); }
+  .contact a { display: inline-block; padding: 16px 40px; border: 1px solid var(--fg); font-size: 12px; text-transform: uppercase; letter-spacing: 3px; transition: all .3s; }
+  .contact a:hover { background: var(--fg); color: var(--bg); }
+  .contact-info { display: flex; justify-content: center; gap: 64px; margin-top: 64px; flex-wrap: wrap; }
+  .contact-info div { text-align: center; }
+  .contact-info .label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
+  .contact-info .val { font-size: 16px; }
+  footer { padding: 32px 48px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
+
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity .9s, transform .9s; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    .intro { grid-template-columns: 1fr; gap: 24px; padding: 80px 24px; }
+    .feature { grid-template-columns: 1fr; }
+    .feature-img { height: 50vh; }
+    .services-grid { grid-template-columns: 1fr; }
+    .team-grid { grid-template-columns: 1fr 1fr; }
+    .hscroll { padding: 0 24px; }
+    .project-card { flex: 0 0 85vw; }
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FORMA</div>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#studio">Studio</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg parallax-bg">
+    <img src="https://picsum.photos/seed/forma-hero/1920/1080" alt="Architecture">
+  </div>
+  <div class="hero-content reveal">
+    <div class="hero-eyebrow">Architecture & Design Studio</div>
+    <h1>Spaces that <strong>breathe.</strong></h1>
+  </div>
+  <div class="hero-bottom">
+    <span class="num">01</span>
+    Featured project — Meridian House
+  </div>
+</section>
+
+<!-- Intro -->
+<section class="intro" id="studio">
+  <div class="intro-label reveal">02 — Studio</div>
+  <div class="intro-text reveal">
+    <h2>We design <strong>buildings</strong> that honor light, material, and the people who inhabit them.</h2>
+    <p>Forma is a New York–based architecture and interiors studio. For over a decade we've shaped residences, cultural spaces, and workplaces that feel inevitable — as if they've always belonged.</p>
+  </div>
+</section>
+
+<!-- Horizontal scroll portfolio -->
+<section class="portfolio-section" id="work">
+  <div class="portfolio-header">
+    <h2 class="reveal">Selected works</h2>
+    <div class="hint reveal">← Drag to explore →</div>
+  </div>
+  <div class="hscroll" id="hscroll">
+    <div class="project-card">
+      <div class="img"><img src="https://picsum.photos/seed/forma-p1/900/520" alt="Project"></div>
+      <div class="meta"><div><div class="title">Meridian House</div><div class="loc">Hudson Valley, NY</div></div><div class="year">2026</div></div>
+    </div>
+    <div class="project-card">
+      <div class="img"><img src="https://picsum.photos/seed/forma-p2/900/520" alt="Project"></div>
+      <div class="meta"><div><div class="title">The Atrium</div><div class="loc">Brooklyn, NY</div></div><div class="year">2025</div></div>
+    </div>
+    <div class="project-card">
+      <div class="img"><img src="https://picsum.photos/seed/forma-p3/900/520" alt="Project"></div>
+      <div class="meta"><div><div class="title">Casa Sol</div><div class="loc">Mallorca, ES</div></div><div class="year">2025</div></div>
+    </div>
+    <div class="project-card">
+      <div class="img"><img src="https://picsum.photos/seed/forma-p4/900/520" alt="Project"></div>
+      <div class="meta"><div><div class="title">Lumen Studio</div><div class="loc">Los Angeles, CA</div></div><div class="year">2024</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Parallax feature -->
+<section class="feature">
+  <div class="feature-img parallax">
+    <div class="parallax-bg">
+      <img src="https://picsum.photos/seed/forma-feature/1200/900" alt="Interior">
+    </div>
+  </div>
+  <div class="feature-text reveal">
+    <div class="num">03 — Approach</div>
+    <h3>Material honesty. Quiet confidence.</h3>
+    <p>We believe in revealing structure rather than concealing it. Concrete, timber, stone, and glass — chosen for how they age, how they feel, how they hold light.</p>
+    <a href="#services" class="btn">Our process</a>
+  </div>
+</section>
+
+<!-- Services -->
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <h2>What we do</h2>
+  </div>
+  <div class="services-grid">
+    <div class="service reveal"><div class="num">01</div><h4>Architecture</h4><p>Full-service design from concept to construction, residential and commercial.</p></div>
+    <div class="service reveal"><div class="num">02</div><h4>Interiors</h4><p>Bespoke interior design that extends the architectural language inward.</p></div>
+    <div class="service reveal"><div class="num">03</div><h4>Master Planning</h4><p>Site strategy, feasibility studies, and large-scale spatial planning.</p></div>
+    <div class="service reveal"><div class="num">04</div><h4>Renovation</h4><p>Thoughtful transformations of existing buildings with respect for their history.</p></div>
+    <div class="service reveal"><div class="num">05</div><h4>Furniture</h4><p>Custom-designed pieces that complete the space.</p></div>
+    <div class="service reveal"><div class="num">06</div><h4>Consulting</h4><p>Design review, material selection, and project oversight.</p></div>
+  </div>
+</section>
+
+<!-- Team -->
+<section class="team">
+  <div class="team-header reveal">
+    <h2>The studio</h2>
+  </div>
+  <div class="team-grid">
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/forma-t1/400/500" alt="Team member"></div><div class="name">Elena Voss</div><div class="role">Founding Principal</div></div>
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/forma-t2/400/500" alt="Team member"></div><div class="name">Marcus Reid</div><div class="role">Design Director</div></div>
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/forma-t3/400/500" alt="Team member"></div><div class="name">Sofia Chen</div><div class="role">Interior Lead</div></div>
+    <div class="member reveal"><div class="img"><img src="https://picsum.photos/seed/forma-t4/400/500" alt="Team member"></div><div class="name">David Okonkwo</div><div class="role">Project Architect</div></div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+  <h2 class="reveal">Let's build<br>something <em>lasting.</em></h2>
+  <a href="mailto:studio@forma.com" class="reveal">studio@forma.com</a>
+  <div class="contact-info reveal">
+    <div><div class="label">Studio</div><div class="val">New York, NY</div></div>
+    <div><div class="label">Phone</div><div class="val">+1 (212) 555-0198</div></div>
+    <div><div class="label">Press</div><div class="val">press@forma.com</div></div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 Forma Studio. All rights reserved.</div>
+  <div>Instagram · LinkedIn · ArchDaily</div>
+</footer>
+
+<script>
+// Parallax hero
+const heroBg = document.querySelector('.hero-bg');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (heroBg) heroBg.style.transform = `translateY(${y * 0.4}px)`;
+}, { passive: true });
+
+// Parallax feature image
+document.querySelectorAll('.parallax').forEach(sec => {
+  const bg = sec.querySelector('.parallax-bg');
+  if (!bg) return;
+  window.addEventListener('scroll', () => {
+    const rect = sec.getBoundingClientRect();
+    const offset = rect.top * 0.25;
+    bg.style.transform = `translateY(${offset}px)`;
+  }, { passive: true });
+});
+
+// Reveal on scroll
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Horizontal drag scroll
+const hs = document.getElementById('hscroll');
+let isDown = false, startX, scrollLeft;
+hs.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - hs.offsetLeft; scrollLeft = hs.scrollLeft; hs.style.cursor = 'grabbing'; });
+hs.addEventListener('mouseleave', () => { isDown = false; hs.style.cursor = 'grab'; });
+hs.addEventListener('mouseup', () => { isDown = false; hs.style.cursor = 'grab'; });
+hs.addEventListener('mousemove', e => { if (!isDown) return; e.preventDefault(); const x = e.pageX - hs.offsetLeft; const walk = (x - startX) * 1.5; hs.scrollLeft = scrollLeft - walk; });
+</script>
+</body>
+</html>
