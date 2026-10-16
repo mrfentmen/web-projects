@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SparkleClean — Cleaning Services</title>
 <style>
-  :root { --bg:#f0f9ff; --fg:#1e293b; --muted:#64748b; --accent:#0ea5e9; --accent2:#10b981; --card:#fff; --line:#e0e7ef; }
+  :root { --bg:#ffffff; --fg:#1a1a2e; --muted:#6b7280; --accent:#0ea5e9; --accent2:#10b981; --card:#f8fafc; --line:#e5e7eb; }
   * { box-sizing:border-box; margin:0; padding:0; }
   html { scroll-behavior:smooth; }
   body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
   a { color:inherit; text-decoration:none; }
 
-  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(240,249,255,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
   .logo { font-weight:700; font-size:20px; letter-spacing:1px; }
   .logo span { color:var(--accent); }
   .nav-links { display:flex; gap:32px; font-size:13px; }
@@ -19,18 +19,17 @@
   .nav-links a:hover { color:var(--fg); }
   .nav-cta { background:var(--accent); color:#fff; padding:10px 20px; font-size:13px; font-weight:600; border-radius:6px; }
 
-  .hero { min-height:85vh; display:flex; align-items:center; padding:0 48px; }
-  .hero-content { max-width:640px; }
-  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(14,165,233,.1); border:1px solid var(--accent); color:var(--accent); padding:6px 14px; font-size:12px; font-weight:600; border-radius:20px; margin-bottom:24px; }
+  .hero { min-height:80vh; background:linear-gradient(135deg,#0ea5e9 0%,#10b981 100%); color:#fff; display:flex; align-items:center; padding:0 48px; position:relative; overflow:hidden; }
+  .hero::before { content:""; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hero-content { position:relative; z-index:2; max-width:640px; }
   .hero h1 { font-size:clamp(40px,6vw,68px); font-weight:700; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; }
-  .hero h1 span { color:var(--accent); }
-  .hero p { color:var(--muted); font-size:17px; margin-bottom:32px; line-height:1.6; }
+  .hero p { opacity:.9; font-size:17px; margin-bottom:32px; line-height:1.6; }
   .hero-cta { display:flex; gap:16px; flex-wrap:wrap; }
   .btn { padding:14px 28px; font-size:14px; font-weight:600; border-radius:6px; transition:all .2s; display:inline-block; }
-  .btn.primary { background:var(--accent); color:#fff; }
-  .btn.primary:hover { background:#0284c7; }
-  .btn.ghost { border:1px solid var(--line); color:var(--fg); background:var(--card); }
-  .btn.ghost:hover { border-color:var(--accent); color:var(--accent); }
+  .btn.primary { background:#fff; color:var(--accent); }
+  .btn.primary:hover { background:#f0f9ff; }
+  .btn.ghost { border:2px solid rgba(255,255,255,.5); color:#fff; }
+  .btn.ghost:hover { background:rgba(255,255,255,.1); }
 
   .services { padding:100px 48px; }
   .services-header { text-align:center; margin-bottom:56px; }
@@ -39,9 +38,9 @@
   .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
   .svc { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:32px 24px; transition:transform .3s,box-shadow .3s; }
   .svc:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,.06); }
-  .svc h3 { font-size:18px; font-weight:600; margin-bottom:8px; }
+  .svc h3 { font-size:18px; font-weight:600; margin-bottom:8px; color:var(--accent); }
   .svc p { color:var(--muted); font-size:13px; line-height:1.6; }
-  .svc .price { color:var(--accent); font-size:13px; font-weight:600; margin-top:12px; }
+  .svc .price { color:var(--accent2); font-size:13px; font-weight:600; margin-top:12px; }
 
   .why { padding:100px 48px; background:var(--card); }
   .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
@@ -91,7 +90,6 @@
 
 <section class="hero">
   <div class="hero-content">
-    <div class="hero-badge">Licensed · Insured · Bonded</div>
     <h1>A cleaner home, <span>happier life.</span></h1>
     <p>Professional residential and commercial cleaning. Eco-friendly products. Satisfaction guaranteed.</p>
     <div class="hero-cta">
@@ -118,7 +116,7 @@
 
 <section class="why" id="why">
   <div class="why-grid">
-    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/clean-why/800/600" alt="Cleaning"></div>
+    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/clean2-why/800/600" alt="Cleaning"></div>
     <div class="why-text reveal-right">
       <h2>Why choose <span>SparkleClean?</span></h2>
       <p>Reliable, thorough, and eco-friendly. We treat your home like our own.</p>
@@ -137,9 +135,9 @@
 <section class="reviews" id="reviews">
   <h2 class="reveal">Happy clients</h2>
   <div class="review-grid">
-    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Spotless every time. They're thorough and reliable."</p><div class="author">— Jennifer M.</div></div>
-    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Best cleaning service we've used. Worth every penny."</p><div class="author">— David K.</div></div>
-    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"They even cleaned behind the fridge! Incredible attention to detail."</p><div class="author">— Lisa R.</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Spotless every time. They're thorough and reliable."</p><div class="author">Jennifer M.</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Best cleaning service we've used. Worth every penny."</p><div class="author">David K.</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"They even cleaned behind the fridge! Incredible attention to detail."</p><div class="author">Lisa R.</div></div>
   </div>
 </section>
 

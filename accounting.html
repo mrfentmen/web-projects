@@ -5,72 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ledger & Co — Accounting</title>
 <style>
-  :root { --bg:#f8fafc; --fg:#1e293b; --muted:#64748b; --accent:#2563eb; --card:#fff; --line:#e2e8f0; }
+  :root { --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --accent:#38bdf8; --accent2:#818cf8; --card:#1e293b; --line:#334155; }
   * { box-sizing:border-box; margin:0; padding:0; }
   html { scroll-behavior:smooth; }
   body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
   a { color:inherit; text-decoration:none; }
 
-  nav { position:sticky; top:0; z-index:100; padding:18px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(248,250,252,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
-  .logo { font-weight:700; font-size:20px; letter-spacing:1px; }
+  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(15,23,42,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .logo { font-weight:700; font-size:18px; letter-spacing:2px; }
   .logo span { color:var(--accent); }
   .nav-links { display:flex; gap:32px; font-size:13px; }
   .nav-links a { color:var(--muted); transition:color .2s; }
   .nav-links a:hover { color:var(--fg); }
-  .nav-cta { background:var(--accent); color:#fff; padding:10px 20px; font-size:13px; font-weight:600; border-radius:6px; }
+  .nav-cta { background:var(--accent); color:var(--bg); padding:10px 20px; font-size:13px; font-weight:600; border-radius:4px; }
 
-  .hero { min-height:85vh; display:flex; align-items:center; padding:0 48px; }
-  .hero-content { max-width:640px; }
-  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(37,99,235,.1); border:1px solid var(--accent); color:var(--accent); padding:6px 14px; font-size:12px; font-weight:600; border-radius:20px; margin-bottom:24px; }
-  .hero h1 { font-size:clamp(40px,6vw,68px); font-weight:700; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; }
+  .hero { min-height:90vh; position:relative; display:flex; align-items:center; padding:0 48px; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; opacity:.15; }
+  .hero-bg img { filter:brightness(.3) saturate(.3); }
+  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px); background-size:60px 60px; opacity:.3; }
+  .hero-content { position:relative; z-index:2; max-width:680px; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(56,189,248,.1); border:1px solid var(--accent); color:var(--accent); padding:6px 14px; font-size:12px; font-weight:600; border-radius:4px; margin-bottom:24px; }
+  .hero h1 { font-size:clamp(40px,6vw,72px); font-weight:700; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; }
   .hero h1 span { color:var(--accent); }
   .hero p { color:var(--muted); font-size:17px; margin-bottom:32px; line-height:1.6; }
   .hero-cta { display:flex; gap:16px; flex-wrap:wrap; }
-  .btn { padding:14px 28px; font-size:14px; font-weight:600; border-radius:6px; transition:all .2s; display:inline-block; }
-  .btn.primary { background:var(--accent); color:#fff; }
-  .btn.primary:hover { background:#1d4ed8; }
-  .btn.ghost { border:1px solid var(--line); color:var(--fg); background:var(--card); }
+  .btn { padding:14px 28px; font-size:14px; font-weight:600; border-radius:4px; transition:all .2s; display:inline-block; }
+  .btn.primary { background:var(--accent); color:var(--bg); }
+  .btn.primary:hover { background:#0ea5e9; }
+  .btn.ghost { border:1px solid var(--line); color:var(--fg); }
   .btn.ghost:hover { border-color:var(--accent); color:var(--accent); }
+  .hero-stats { margin-top:48px; display:flex; gap:48px; }
+  .hero-stats .stat .num { font-size:28px; font-weight:700; color:var(--accent); }
+  .hero-stats .stat .lbl { color:var(--muted); font-size:12px; margin-top:4px; }
 
   .services { padding:100px 48px; }
-  .services-header { text-align:center; margin-bottom:56px; }
-  .services-header .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; }
+  .services-header { margin-bottom:48px; display:flex; justify-content:space-between; align-items:end; border-bottom:1px solid var(--line); padding-bottom:16px; }
   .services-header h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; }
-  .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-  .svc { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:32px 24px; transition:transform .3s,box-shadow .3s; }
-  .svc:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,.06); }
-  .svc h3 { font-size:18px; font-weight:600; margin-bottom:8px; }
+  .services-header span { color:var(--muted); font-size:13px; }
+  .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .svc { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:28px 24px; transition:transform .3s,border-color .3s; }
+  .svc:hover { transform:translateY(-4px); border-color:var(--accent); }
+  .svc h3 { font-size:16px; font-weight:600; margin-bottom:8px; color:var(--accent); }
   .svc p { color:var(--muted); font-size:13px; line-height:1.6; }
 
   .why { padding:100px 48px; background:var(--card); }
   .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
-  .why-img { height:420px; border-radius:12px; overflow:hidden; }
+  .why-img { height:420px; border-radius:8px; overflow:hidden; border:1px solid var(--line); }
   .why-img img { transition:transform .7s; }
   .why-img:hover img { transform:scale(1.05); }
   .why-text h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:20px; }
   .why-text h2 span { color:var(--accent); }
   .why-text p { color:var(--muted); line-height:1.7; margin-bottom:20px; }
   .why-list { list-style:none; }
-  .why-list li { padding:10px 0; display:flex; align-items:center; gap:12px; font-size:14px; }
+  .why-list li { padding:10px 0; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; font-size:14px; }
   .why-list li::before { content:"✓"; color:#10b981; font-weight:700; }
 
-  .stats { padding:100px 48px; text-align:center; }
-  .stats h2 { font-size:clamp(30px,4vw,48px); font-weight:700; margin-bottom:48px; }
-  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; max-width:900px; margin:0 auto; }
-  .stat .num { font-size:48px; font-weight:700; color:var(--accent); }
-  .stat .lbl { color:var(--muted); font-size:13px; margin-top:8px; }
-
-  .cta { padding:100px 48px; text-align:center; background:var(--accent); color:#fff; }
+  .cta { padding:100px 48px; text-align:center; background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--bg); }
   .cta h2 { font-size:clamp(32px,5vw,48px); font-weight:700; margin-bottom:16px; }
   .cta p { opacity:.9; margin-bottom:32px; }
-  .cta .btn { background:#fff; color:var(--accent); padding:14px 32px; font-weight:600; border-radius:6px; display:inline-block; }
+  .cta .btn { background:var(--bg); color:var(--accent); padding:14px 32px; font-weight:600; border-radius:4px; display:inline-block; }
 
   footer { padding:32px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
 
   .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
   .reveal.in { opacity:1; transform:translateY(0); }
 
-  @media(max-width:900px){ .svc-grid{grid-template-columns:1fr;} .why-grid{grid-template-columns:1fr;gap:40px;} .stats-grid{grid-template-columns:1fr 1fr;} nav{padding:16px 24px;} .nav-links{display:none;} }
+  @media(max-width:900px){ .svc-grid{grid-template-columns:1fr;} .why-grid{grid-template-columns:1fr;gap:40px;} nav{padding:16px 24px;} .nav-links{display:none;} .hero{padding:0 24px;} .hero-stats{flex-direction:column;gap:16px;} }
 </style>
 </head>
 <body>
@@ -86,6 +86,8 @@
 </nav>
 
 <section class="hero">
+  <div class="hero-bg"><img src="https://picsum.photos/seed/accounting2-hero/1920/1080" alt=""></div>
+  <div class="hero-grid"></div>
   <div class="hero-content">
     <div class="hero-badge">CPA Certified · 20 Years</div>
     <h1>Your finances, <span>simplified.</span></h1>
@@ -94,13 +96,18 @@
       <a href="#contact" class="btn primary">Free consultation</a>
       <a href="#services" class="btn ghost">Our services</a>
     </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="num">$50M+</div><div class="lbl">Tax savings</div></div>
+      <div class="stat"><div class="num">500+</div><div class="lbl">Clients</div></div>
+      <div class="stat"><div class="num">20yr</div><div class="lbl">Experience</div></div>
+    </div>
   </div>
 </section>
 
 <section class="services" id="services">
-  <div class="services-header reveal">
-    <div class="eyebrow">What we do</div>
-    <h2>Accounting services</h2>
+  <div class="services-header">
+    <h2>Services</h2>
+    <span>6 services</span>
   </div>
   <div class="svc-grid">
     <div class="svc reveal"><h3>Tax Preparation</h3><p>Individual and business tax returns filed accurately and on time.</p></div>
@@ -114,7 +121,7 @@
 
 <section class="why" id="why">
   <div class="why-grid">
-    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/accounting-why/800/600" alt="Office"></div>
+    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/accounting2-why/800/600" alt="Office"></div>
     <div class="why-text reveal-right">
       <h2>Why choose <span>Ledger & Co?</span></h2>
       <p>We're more than accountants — we're your financial partners. Personalized service, proactive advice.</p>
@@ -127,16 +134,6 @@
         <li>Secure document portal</li>
       </ul>
     </div>
-  </div>
-</section>
-
-<section class="stats">
-  <h2 class="reveal">By the numbers</h2>
-  <div class="stats-grid">
-    <div class="stat reveal"><div class="num">500+</div><div class="lbl">Clients served</div></div>
-    <div class="stat reveal"><div class="num">$50M+</div><div class="lbl">Tax savings</div></div>
-    <div class="stat reveal"><div class="num">20yr</div><div class="lbl">Experience</div></div>
-    <div class="stat reveal"><div class="num">99%</div><div class="lbl">Satisfaction</div></div>
   </div>
 </section>
 

@@ -5,86 +5,84 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GearHead — Auto Repair</title>
 <style>
-  :root { --bg:#1a1a1a; --fg:#f0f0f0; --muted:#888; --accent:#ff6b35; --accent2:#f7c59f; --card:#222; --line:#333; }
+  :root { --bg:#0d0d0d; --fg:#f0f0f0; --muted:#777; --accent:#ff4500; --accent2:#ff8c00; --card:#1a1a1a; --line:#2a2a2a; }
   * { box-sizing:border-box; margin:0; padding:0; }
   html { scroll-behavior:smooth; }
   body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
-  img { display:block; width:100%; height:100%; object-fit:cover; }
   a { color:inherit; text-decoration:none; }
 
-  .emergency { background:var(--accent); color:#fff; text-align:center; padding:10px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
+  .emergency { background:var(--accent); color:#fff; text-align:center; padding:12px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:2px; }
   .emergency a { text-decoration:underline; }
 
-  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(26,26,26,.95); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
-  .logo { font-weight:800; font-size:20px; letter-spacing:1px; }
+  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(13,13,13,.95); backdrop-filter:blur(12px); border-bottom:2px solid var(--accent); }
+  .logo { font-weight:900; font-size:24px; letter-spacing:-1px; text-transform:uppercase; }
   .logo span { color:var(--accent); }
-  .nav-links { display:flex; gap:28px; font-size:13px; }
+  .nav-links { display:flex; gap:28px; font-size:12px; text-transform:uppercase; letter-spacing:1px; font-weight:600; }
   .nav-links a { color:var(--muted); transition:color .2s; }
   .nav-links a:hover { color:var(--fg); }
-  .nav-cta { background:var(--accent); color:#fff; padding:10px 20px; font-size:13px; font-weight:600; }
+  .nav-cta { background:var(--accent); color:#fff; padding:10px 20px; font-size:12px; font-weight:700; text-transform:uppercase; }
 
-  .hero { min-height:80vh; position:relative; display:flex; align-items:center; padding:0 48px; overflow:hidden; }
-  .hero-bg { position:absolute; inset:0; opacity:.3; }
-  .hero-bg img { filter:brightness(.4) saturate(.6); }
-  .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,var(--bg) 0%,rgba(26,26,26,.7) 60%,transparent 100%); }
-  .hero-content { position:relative; z-index:2; max-width:640px; }
-  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,107,53,.15); border:1px solid var(--accent); color:var(--accent); padding:6px 14px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:24px; }
-  .hero h1 { font-size:clamp(36px,6vw,64px); font-weight:800; line-height:1.05; letter-spacing:-1.5px; margin-bottom:20px; }
+  .hero { min-height:80vh; position:relative; display:flex; align-items:center; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; opacity:.25; }
+  .hero-bg img { filter:grayscale(1) brightness(.4); }
+  .hero-diagonal { position:absolute; bottom:0; left:0; right:0; height:120px; background:var(--bg); clip-path:polygon(0 60%, 100% 0, 100% 100%, 0 100%); }
+  .hero-content { position:relative; z-index:2; padding:0 64px; max-width:700px; }
+  .hero-badge { display:inline-block; background:var(--accent); color:#fff; padding:6px 16px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:24px; }
+  .hero h1 { font-size:clamp(40px,7vw,80px); font-weight:900; line-height:.95; text-transform:uppercase; letter-spacing:-2px; margin-bottom:20px; }
   .hero h1 span { color:var(--accent); }
-  .hero p { color:var(--muted); font-size:17px; margin-bottom:32px; line-height:1.6; }
-  .hero-cta { display:flex; gap:16px; flex-wrap:wrap; }
-  .btn { padding:14px 28px; font-size:14px; font-weight:600; transition:all .2s; display:inline-block; }
+  .hero p { color:var(--muted); font-size:16px; margin-bottom:32px; line-height:1.6; max-width:500px; }
+  .hero-cta { display:flex; gap:16px; }
+  .btn { padding:14px 28px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; transition:all .2s; display:inline-block; }
   .btn.primary { background:var(--accent); color:#fff; }
-  .btn.primary:hover { background:#e55a2b; }
-  .btn.ghost { border:1px solid var(--muted); color:var(--fg); }
-  .btn.ghost:hover { border-color:var(--fg); }
-  .hero-trust { margin-top:32px; display:flex; gap:24px; font-size:12px; color:var(--muted); flex-wrap:wrap; }
+  .btn.primary:hover { background:var(--accent2); }
+  .btn.ghost { border:2px solid var(--fg); color:var(--fg); }
+  .btn.ghost:hover { background:var(--fg); color:var(--bg); }
+  .hero-trust { margin-top:32px; display:flex; gap:24px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; flex-wrap:wrap; }
   .hero-trust span { display:flex; align-items:center; gap:6px; }
 
-  .services { padding:100px 48px; }
-  .services-header { text-align:center; margin-bottom:56px; }
-  .services-header .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; }
-  .services-header h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; }
-  .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-  .svc { background:var(--card); border:1px solid var(--line); padding:32px 24px; transition:transform .3s,border-color .3s; }
-  .svc:hover { transform:translateY(-4px); border-color:var(--accent); }
-  .svc .icon { font-size:32px; margin-bottom:16px; }
-  .svc h3 { font-size:18px; font-weight:600; margin-bottom:8px; }
-  .svc p { color:var(--muted); font-size:13px; line-height:1.6; }
-  .svc .price { color:var(--accent); font-size:13px; font-weight:600; margin-top:12px; }
+  .services { padding:100px 64px; }
+  .services-header { margin-bottom:48px; display:flex; justify-content:space-between; align-items:end; border-bottom:2px solid var(--accent); padding-bottom:16px; }
+  .services-header h2 { font-size:clamp(32px,5vw,56px); font-weight:900; text-transform:uppercase; letter-spacing:-1px; }
+  .services-header span { color:var(--muted); font-size:13px; text-transform:uppercase; letter-spacing:1px; }
+  .svc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--line); }
+  .svc { background:var(--bg); padding:32px 24px; transition:background .3s; }
+  .svc:hover { background:var(--card); }
+  .svc h3 { font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; color:var(--accent); }
+  .svc p { color:var(--muted); font-size:13px; line-height:1.6; margin-bottom:12px; }
+  .svc .price { font-size:14px; font-weight:700; color:var(--fg); }
 
-  .why { padding:100px 48px; background:var(--card); }
-  .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
-  .why-img { height:420px; overflow:hidden; }
-  .why-img img { transition:transform .7s; }
-  .why-img:hover img { transform:scale(1.05); }
-  .why-text h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:20px; }
+  .why { padding:100px 64px; background:var(--card); }
+  .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .why-img { height:400px; overflow:hidden; border:2px solid var(--accent); }
+  .why-img img { transition:transform .7s; filter:grayscale(1); }
+  .why-img:hover img { transform:scale(1.05); filter:grayscale(0); }
+  .why-text h2 { font-size:clamp(32px,5vw,56px); font-weight:900; text-transform:uppercase; letter-spacing:-1px; margin-bottom:20px; }
   .why-text h2 span { color:var(--accent); }
   .why-text p { color:var(--muted); line-height:1.7; margin-bottom:20px; }
   .why-list { list-style:none; }
-  .why-list li { padding:12px 0; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; font-size:14px; }
+  .why-list li { padding:12px 0; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px; font-size:14px; text-transform:uppercase; letter-spacing:1px; }
   .why-list li::before { content:"✓"; color:var(--accent); font-weight:700; }
 
-  .reviews { padding:100px 48px; }
-  .reviews-header { text-align:center; margin-bottom:48px; }
-  .reviews-header h2 { font-size:clamp(30px,4vw,48px); font-weight:700; }
+  .reviews { padding:100px 64px; }
+  .reviews-header { margin-bottom:48px; border-bottom:2px solid var(--accent); padding-bottom:16px; }
+  .reviews-header h2 { font-size:clamp(32px,5vw,56px); font-weight:900; text-transform:uppercase; letter-spacing:-1px; }
   .review-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-  .review { background:var(--card); border:1px solid var(--line); padding:28px; }
-  .review .stars { color:#f59e0b; margin-bottom:12px; letter-spacing:2px; }
+  .review { background:var(--card); border-left:3px solid var(--accent); padding:28px; }
+  .review .stars { color:var(--accent); margin-bottom:12px; letter-spacing:2px; }
   .review .text { color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:16px; font-style:italic; }
-  .review .author { font-size:13px; font-weight:600; }
+  .review .author { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; }
 
-  .cta { padding:100px 48px; text-align:center; background:linear-gradient(135deg,var(--accent),#cc5528); color:#fff; }
-  .cta h2 { font-size:clamp(32px,5vw,56px); font-weight:700; margin-bottom:16px; }
+  .cta { padding:100px 64px; text-align:center; background:var(--accent); color:#fff; }
+  .cta h2 { font-size:clamp(36px,6vw,64px); font-weight:900; text-transform:uppercase; letter-spacing:-1px; margin-bottom:16px; }
   .cta p { opacity:.9; margin-bottom:32px; font-size:16px; }
-  .cta .btn { background:#fff; color:var(--accent); padding:14px 32px; font-weight:600; display:inline-block; }
+  .cta .btn { background:#fff; color:var(--accent); padding:14px 32px; font-weight:700; text-transform:uppercase; display:inline-block; }
 
-  footer { padding:32px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
+  footer { padding:24px 64px; border-top:2px solid var(--accent); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:1px; }
 
   .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
   .reveal.in { opacity:1; transform:translateY(0); }
 
-  @media(max-width:900px){ .svc-grid{grid-template-columns:1fr;} .why-grid{grid-template-columns:1fr;gap:40px;} .review-grid{grid-template-columns:1fr;} nav{padding:14px 24px;} .nav-links{display:none;} .hero{padding:0 24px;} }
+  @media(max-width:900px){ .svc-grid{grid-template-columns:1fr;} .why-grid{grid-template-columns:1fr;gap:40px;} .review-grid{grid-template-columns:1fr;} nav{padding:14px 24px;} .nav-links{display:none;} .hero-content{padding:0 24px;} .services{padding:80px 24px;} .why{padding:80px 24px;} .reviews{padding:80px 24px;} }
 </style>
 </head>
 <body>
@@ -103,8 +101,9 @@
 </nav>
 
 <section class="hero">
-  <div class="hero-bg"><img src="https://picsum.photos/seed/auto-hero/1920/1080" alt="Auto shop"></div>
+  <div class="hero-bg"><img src="https://picsum.photos/seed/auto2-hero/1920/1080" alt="Auto shop"></div>
   <div class="hero-overlay"></div>
+  <div class="hero-diagonal"></div>
   <div class="hero-content">
     <div class="hero-badge">ASE Certified · 20 Years</div>
     <h1>Honest auto repair. <span>Done right.</span></h1>
@@ -114,29 +113,29 @@
       <a href="#services" class="btn ghost">Our services</a>
     </div>
     <div class="hero-trust">
-      <span>✓ ASE Certified</span><span>✓ Warranty on all work</span><span>✓ Free estimates</span><span>✓ Shuttle service</span>
+      <span>ASE Certified</span><span>Warranty on all work</span><span>Free estimates</span><span>Shuttle service</span>
     </div>
   </div>
 </section>
 
 <section class="services" id="services">
-  <div class="services-header reveal">
-    <div class="eyebrow">What we do</div>
-    <h2>Auto repair services</h2>
+  <div class="services-header">
+    <h2>Services</h2>
+    <span>6 services</span>
   </div>
   <div class="svc-grid">
-    <div class="svc reveal"><div class="icon"></div><h3>Oil Change</h3><p>Full synthetic oil change with 21-point inspection.</p><div class="price">From $49</div></div>
-    <div class="svc reveal"><div class="icon"></div><h3>Brake Repair</h3><p>Pads, rotors, calipers, and brake fluid.</p><div class="price">From $149</div></div>
-    <div class="svc reveal"><div class="icon"></div><h3>Engine Diagnostics</h3><p>Computer diagnostics and check engine light.</p><div class="price">From $89</div></div>
-    <div class="svc reveal"><div class="icon"></div><h3>AC Repair</h3><p>Air conditioning recharge and repair.</p><div class="price">From $129</div></div>
-    <div class="svc reveal"><div class="icon"></div><h3>Tire Service</h3><p>Rotation, balancing, alignment, and new tires.</p><div class="price">From $29</div></div>
-    <div class="svc reveal"><div class="icon"></div><h3>Transmission</h3><p>Fluid change, repair, and rebuild.</p><div class="price">Custom quote</div></div>
+    <div class="svc reveal"><h3>Oil Change</h3><p>Full synthetic oil change with 21-point inspection.</p><div class="price">From $49</div></div>
+    <div class="svc reveal"><h3>Brake Repair</h3><p>Pads, rotors, calipers, and brake fluid.</p><div class="price">From $149</div></div>
+    <div class="svc reveal"><h3>Engine Diagnostics</h3><p>Computer diagnostics and check engine light.</p><div class="price">From $89</div></div>
+    <div class="svc reveal"><h3>AC Repair</h3><p>Air conditioning recharge and repair.</p><div class="price">From $129</div></div>
+    <div class="svc reveal"><h3>Tire Service</h3><p>Rotation, balancing, alignment, and new tires.</p><div class="price">From $29</div></div>
+    <div class="svc reveal"><h3>Transmission</h3><p>Fluid change, repair, and rebuild.</p><div class="price">Custom quote</div></div>
   </div>
 </section>
 
 <section class="why" id="why">
   <div class="why-grid">
-    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/auto-why/800/600" alt="Mechanic"></div>
+    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/auto2-why/800/600" alt="Mechanic"></div>
     <div class="why-text reveal-right">
       <h2>Why choose <span>GearHead?</span></h2>
       <p>We're a family-owned shop that treats your car like our own. No upselling, no hidden fees.</p>
@@ -153,11 +152,13 @@
 </section>
 
 <section class="reviews" id="reviews">
-  <div class="reviews-header reveal"><h2>What customers say</h2></div>
+  <div class="reviews-header">
+    <h2>Reviews</h2>
+  </div>
   <div class="review-grid">
-    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Honest mechanic. Fixed my brakes for half what the dealer quoted."</p><div class="author">— Mike R.</div></div>
-    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Fast oil change, fair price, and they actually checked everything."</p><div class="author">— Sarah T.</div></div>
-    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Best shop in town. They never try to upsell you."</p><div class="author">— David L.</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Honest mechanic. Fixed my brakes for half what the dealer quoted."</p><div class="author">Mike R.</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Fast oil change, fair price, and they actually checked everything."</p><div class="author">Sarah T.</div></div>
+    <div class="review reveal"><div class="stars">★★★★★</div><p class="text">"Best shop in town. They never try to upsell you."</p><div class="author">David L.</div></div>
   </div>
 </section>
 
