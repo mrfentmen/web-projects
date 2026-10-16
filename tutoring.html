@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bright Minds — Tutoring</title>
+<style>
+  :root { --bg:#f0f4ff; --fg:#1a1a2e; --muted:#5a5a7a; --accent:#6366f1; --accent2:#8b5cf6; --card:#fff; --line:#e0e4f0; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(240,244,255,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .logo { font-weight:700; font-size:20px; letter-spacing:1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:13px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-cta { background:var(--accent); color:#fff; padding:10px 20px; font-size:13px; font-weight:600; border-radius:6px; }
+
+  .hero { min-height:85vh; display:flex; align-items:center; padding:0 48px; }
+  .hero-content { max-width:640px; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(99,102,241,.1); border:1px solid var(--accent); color:var(--accent); padding:6px 14px; font-size:12px; font-weight:600; border-radius:20px; margin-bottom:24px; }
+  .hero h1 { font-size:clamp(40px,6vw,68px); font-weight:700; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; }
+  .hero h1 span { color:var(--accent); }
+  .hero p { color:var(--muted); font-size:17px; margin-bottom:32px; line-height:1.6; }
+  .hero-cta { display:flex; gap:16px; flex-wrap:wrap; }
+  .btn { padding:14px 28px; font-size:14px; font-weight:600; border-radius:6px; transition:all .2s; display:inline-block; }
+  .btn.primary { background:var(--accent); color:#fff; }
+  .btn.primary:hover { background:#4f46e5; }
+  .btn.ghost { border:1px solid var(--line); color:var(--fg); background:var(--card); }
+  .btn.ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+  .subjects { padding:100px 48px; }
+  .subjects-header { text-align:center; margin-bottom:56px; }
+  .subjects-header .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; }
+  .subjects-header h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; }
+  .subject-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .subject { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:28px 20px; text-align:center; transition:transform .3s,box-shadow .3s; }
+  .subject:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,.06); }
+  .subject h3 { font-size:16px; font-weight:600; margin-bottom:6px; }
+  .subject p { color:var(--muted); font-size:12px; }
+
+  .why { padding:100px 48px; background:var(--card); }
+  .why-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+  .why-img { height:420px; border-radius:12px; overflow:hidden; }
+  .why-img img { transition:transform .7s; }
+  .why-img:hover img { transform:scale(1.05); }
+  .why-text h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:20px; }
+  .why-text h2 span { color:var(--accent); }
+  .why-text p { color:var(--muted); line-height:1.7; margin-bottom:20px; }
+  .why-list { list-style:none; }
+  .why-list li { padding:10px 0; display:flex; align-items:center; gap:12px; font-size:14px; }
+  .why-list li::before { content:"✓"; color:#10b981; font-weight:700; }
+
+  .stats { padding:100px 48px; text-align:center; }
+  .stats h2 { font-size:clamp(30px,4vw,48px); font-weight:700; margin-bottom:48px; }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; max-width:900px; margin:0 auto; }
+  .stat .num { font-size:48px; font-weight:700; color:var(--accent); }
+  .stat .lbl { color:var(--muted); font-size:13px; margin-top:8px; }
+
+  .cta { padding:100px 48px; text-align:center; background:var(--accent); color:#fff; }
+  .cta h2 { font-size:clamp(32px,5vw,48px); font-weight:700; margin-bottom:16px; }
+  .cta p { opacity:.9; margin-bottom:32px; }
+  .cta .btn { background:#fff; color:var(--accent); padding:14px 32px; font-weight:600; border-radius:6px; display:inline-block; }
+
+  footer { padding:32px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .subject-grid{grid-template-columns:1fr 1fr;} .why-grid{grid-template-columns:1fr;gap:40px;} .stats-grid{grid-template-columns:1fr 1fr;} nav{padding:16px 24px;} .nav-links{display:none;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BRIGHT <span>Minds</span></div>
+  <div class="nav-links">
+    <a href="#subjects">Subjects</a>
+    <a href="#why">Why us</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Get started</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">K-12 · SAT/ACT Prep</div>
+    <h1>Unlock your child's <span>potential.</span></h1>
+    <p>Personalized tutoring for every subject and every level. Expert tutors, proven results.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn primary">Free assessment</a>
+      <a href="#subjects" class="btn ghost">Our subjects</a>
+    </div>
+  </div>
+</section>
+
+<section class="subjects" id="subjects">
+  <div class="subjects-header reveal">
+    <div class="eyebrow">What we teach</div>
+    <h2>Subjects</h2>
+  </div>
+  <div class="subject-grid">
+    <div class="subject reveal"><h3>Math</h3><p>Algebra, Geometry, Calculus</p></div>
+    <div class="subject reveal"><h3>Science</h3><p>Biology, Chemistry, Physics</p></div>
+    <div class="subject reveal"><h3>English</h3><p>Reading, Writing, Grammar</p></div>
+    <div class="subject reveal"><h3>History</h3><p>US & World History</p></div>
+    <div class="subject reveal"><h3>SAT/ACT</h3><p>Test prep and strategy</p></div>
+    <div class="subject reveal"><h3>AP Courses</h3><p>Advanced Placement prep</p></div>
+    <div class="subject reveal"><h3>Coding</h3><p>Python, Scratch, Web Dev</p></div>
+    <div class="subject reveal"><h3>Foreign Lang</h3><p>Spanish, French, Mandarin</p></div>
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="why-grid">
+    <div class="why-img reveal-left"><img src="https://picsum.photos/seed/tutor-why/800/600" alt="Tutoring"></div>
+    <div class="why-text reveal-right">
+      <h2>Why choose <span>Bright Minds?</span></h2>
+      <p>We match students with the right tutor for their learning style and goals.</p>
+      <ul class="why-list">
+        <li>Expert, vetted tutors</li>
+        <li>Personalized learning plans</li>
+        <li>Flexible scheduling</li>
+        <li>In-person & online</li>
+        <li>Progress tracking</li>
+        <li>Satisfaction guaranteed</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <h2 class="reveal">By the numbers</h2>
+  <div class="stats-grid">
+    <div class="stat reveal"><div class="num">500+</div><div class="lbl">Students</div></div>
+    <div class="stat reveal"><div class="num">95%</div><div class="lbl">Score improvement</div></div>
+    <div class="stat reveal"><div class="num">50+</div><div class="lbl">Tutors</div></div>
+    <div class="stat reveal"><div class="num">10yr</div><div class="lbl">Experience</div></div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Start learning today.</h2>
+  <p>Free assessment. No commitment.</p>
+  <a href="tel:+15556789012" class="btn">Call (555) 678-9012</a>
+</section>
+
+<footer>
+  <div>© 2026 Bright Minds Tutoring. All rights reserved.</div>
+  <div>(555) 678-9012 · hello@brightminds.com</div>
+</footer>
+
+<script>
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
