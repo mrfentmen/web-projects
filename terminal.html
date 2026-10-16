@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terminal — Hacker Theme</title>
+<style>
+  :root { --bg:#0a0e0a; --fg:#00ff41; --muted:#00aa2a; --accent:#00ff41; --card:#0d120d; --line:#1a2a1a; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"JetBrains Mono", "Fira Code", "Courier New", monospace; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  a { color:inherit; text-decoration:none; }
+
+  /* Scanlines */
+  .scanlines { position:fixed; inset:0; z-index:100; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0px,rgba(0,0,0,.15) 1px,transparent 1px,transparent 2px); }
+
+  /* CRT glow */
+  body::before { content:""; position:fixed; inset:0; background:radial-gradient(ellipse at center,transparent 0%,rgba(0,0,0,.4) 100%); z-index:99; pointer-events:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:101; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(10,14,10,.9); border-bottom:1px solid var(--line); }
+  .logo { font-weight:700; font-size:16px; letter-spacing:2px; }
+  .logo span { color:var(--muted); }
+  .nav-links { display:flex; gap:24px; font-size:12px; text-transform:uppercase; letter-spacing:1px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-links a::before { content:"> "; color:var(--accent); }
+
+  .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:100px 48px 60px; position:relative; }
+  .hero-prompt { color:var(--muted); font-size:14px; margin-bottom:16px; }
+  .hero-prompt::before { content:"$ "; color:var(--accent); }
+  .hero h1 { font-size:clamp(32px,6vw,72px); font-weight:700; line-height:1.2; letter-spacing:-1px; }
+  .hero h1 .cursor-blink { display:inline-block; width:12px; height:1em; background:var(--accent); margin-left:4px; animation:blink 1s step-end infinite; vertical-align:text-bottom; }
+  @keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+  .hero-sub { color:var(--muted); font-size:14px; margin-top:24px; max-width:600px; line-height:1.8; }
+  .hero-sub::before { content:"> "; color:var(--accent); }
+  .hero-cta { margin-top:40px; display:flex; gap:16px; }
+  .btn { padding:12px 24px; border:1px solid var(--accent); color:var(--accent); font-size:13px; text-transform:uppercase; letter-spacing:1px; transition:all .2s; background:transparent; }
+  .btn:hover { background:var(--accent); color:var(--bg); }
+  .btn.filled { background:var(--accent); color:var(--bg); }
+
+  /* Terminal window */
+  .terminal { margin:60px 48px; background:var(--card); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .terminal-header { padding:12px 16px; background:rgba(0,255,65,.05); border-bottom:1px solid var(--line); display:flex; align-items:center; gap:8px; }
+  .terminal-dot { width:12px; height:12px; border-radius:50%; }
+  .terminal-dot.r { background:#ff5f57; } .terminal-dot.y { background:#febc2e; } .terminal-dot.g { background:#28c840; }
+  .terminal-title { margin-left:12px; font-size:12px; color:var(--muted); }
+  .terminal-body { padding:20px; font-size:13px; line-height:1.8; }
+  .terminal-body .line { opacity:0; animation:fadeIn .5s forwards; }
+  .terminal-body .line:nth-child(1){animation-delay:.2s} .line:nth-child(2){animation-delay:.4s} .line:nth-child(3){animation-delay:.6s} .line:nth-child(4){animation-delay:.8s} .line:nth-child(5){animation-delay:1s} .line:nth-child(6){animation-delay:1.2s} .line:nth-child(7){animation-delay:1.4s} .line:nth-child(8){animation-delay:1.6s}
+  @keyframes fadeIn { to{opacity:1} }
+  .terminal-body .prompt { color:var(--accent); }
+  .terminal-body .output { color:var(--muted); }
+  .terminal-body .highlight { color:#ffcc00; }
+
+  /* Features as commands */
+  .features { padding:80px 48px; }
+  .features h2 { font-size:24px; font-weight:700; margin-bottom:32px; }
+  .features h2::before { content:"$ "; color:var(--accent); }
+  .cmd-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .cmd { background:var(--card); border:1px solid var(--line); padding:20px; transition:border-color .2s; }
+  .cmd:hover { border-color:var(--accent); }
+  .cmd .name { color:var(--accent); font-size:14px; font-weight:700; margin-bottom:8px; }
+  .cmd .name::before { content:"> "; }
+  .cmd .desc { color:var(--muted); font-size:12px; line-height:1.6; }
+
+  /* Stats */
+  .stats { padding:60px 48px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .stat .num { font-size:32px; font-weight:700; color:var(--accent); }
+  .stat .lbl { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+
+  /* CTA */
+  .cta { padding:100px 48px; text-align:center; }
+  .cta h2 { font-size:clamp(32px,5vw,56px); font-weight:700; margin-bottom:24px; }
+  .cta h2::before { content:"> "; color:var(--accent); }
+  .cta p { color:var(--muted); font-size:14px; margin-bottom:32px; }
+  .cta p::before { content:"// "; }
+
+  footer { padding:24px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:1px; }
+
+  .reveal { opacity:0; transform:translateY(20px); transition:opacity .6s,transform .6s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .cmd-grid{grid-template-columns:1fr;} .stats{grid-template-columns:1fr 1fr;} nav{padding:16px 24px;} .nav-links{display:none;} }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="scanlines"></div>
+
+<nav>
+  <div class="logo">TERM<span>INAL</span></div>
+  <div class="nav-links">
+    <a href="#commands">Commands</a>
+    <a href="#stats">Stats</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-prompt">whoami</div>
+  <h1>root@terminal:~# <span class="cursor-blink"></span></h1>
+  <p class="hero-sub">A hacker-themed terminal interface. Green on black. Pure nostalgia.</p>
+  <div class="hero-cta">
+    <a href="#commands" class="btn filled">./execute.sh</a>
+    <a href="#contact" class="btn">./contact.sh</a>
+  </div>
+</section>
+
+<div class="terminal">
+  <div class="terminal-header">
+    <div class="terminal-dot r"></div>
+    <div class="terminal-dot y"></div>
+    <div class="terminal-dot g"></div>
+    <div class="terminal-title">terminal — bash — 80×24</div>
+  </div>
+  <div class="terminal-body">
+    <div class="line"><span class="prompt">$</span> whoami</div>
+    <div class="line"><span class="output">root</span></div>
+    <div class="line"><span class="prompt">$</span> cat mission.txt</div>
+    <div class="line"><span class="output">Building the future, one line of code at a time.</span></div>
+    <div class="line"><span class="prompt">$</span> ls -la /skills</div>
+    <div class="line"><span class="output">design  development  strategy  motion</span></div>
+    <div class="line"><span class="prompt">$</span> echo $STATUS</div>
+    <div class="line"><span class="highlight">READY_TO_BUILD</span></div>
+  </div>
+</div>
+
+<section class="features" id="commands">
+  <h2>Available commands</h2>
+  <div class="cmd-grid">
+    <div class="cmd"><div class="name">design</div><div class="desc">UI/UX design, brand identity, and visual systems.</div></div>
+    <div class="cmd"><div class="name">develop</div><div class="desc">Full-stack web development and API design.</div></div>
+    <div class="cmd"><div class="name">deploy</div><div class="desc">Cloud infrastructure and CI/CD pipelines.</div></div>
+    <div class="cmd"><div class="name">optimize</div><div class="desc">Performance tuning and SEO optimization.</div></div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stat"><div class="num">500+</div><div class="lbl">Projects</div></div>
+  <div class="stat"><div class="num">99.9%</div><div class="lbl">Uptime</div></div>
+  <div class="stat"><div class="num">24/7</div><div class="lbl">Support</div></div>
+  <div class="stat"><div class="num">10yr</div><div class="lbl">Experience</div></div>
+</div>
+
+<section class="cta" id="contact">
+  <h2>Execute mission.</h2>
+  <p>// Ready when you are. Let's build something.</p>
+  <a href="mailto:hello@terminal.dev" class="btn filled">./contact.sh</a>
+</section>
+
+<footer>
+  <div>© 2026 Terminal. All rights reserved.</div>
+  <div>hello@terminal.dev</div>
+</footer>
+
+<script>
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.cmd').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
