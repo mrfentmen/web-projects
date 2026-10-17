@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prime Cut — Steakhouse</title>
+<style>
+  :root { --bg:#0a0806; --fg:#f5e9d5; --muted:#b8a88a; --accent:#8b0000; --accent2:#c41e3a; --gold:#d4a574; --card:#1a1210; --line:#2a2018; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Playfair Display", "Georgia", serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:20px 48px; display:flex; justify-content:space-between; align-items:center; mix-blend-mode:difference; }
+  .logo { font-weight:700; font-size:24px; letter-spacing:2px; }
+  .logo span { color:var(--accent2); font-style:italic; font-weight:400; }
+  .nav-links { display:flex; gap:32px; font-size:12px; text-transform:uppercase; letter-spacing:2px; font-family:"Inter",sans-serif; }
+  .nav-links a { opacity:.7; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; }
+  .nav-cta { background:var(--accent); color:#fff; padding:10px 22px; font-family:"Inter",sans-serif; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+
+  .hero { height:100vh; position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:0 0 80px; }
+  .hero-bg { position:absolute; inset:-20% 0; will-change:transform; }
+  .hero-bg img { filter:brightness(.4) saturate(1.1); }
+  .hero-overlay { position:absolute; inset:0; background:linear-gradient(180deg,transparent 20%,rgba(10,8,6,.95) 100%); }
+  .hero-content { position:relative; z-index:2; padding:0 64px; max-width:700px; }
+  .hero-eyebrow { font-family:"Inter",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:6px; color:var(--gold); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(56px,9vw,120px); font-weight:400; line-height:.9; letter-spacing:-2px; margin-bottom:20px; }
+  .hero h1 .it { font-style:italic; color:var(--accent2); }
+  .hero-sub { color:var(--muted); font-size:17px; max-width:480px; margin-bottom:32px; }
+  .hero-cta { display:flex; gap:16px; }
+  .btn { padding:14px 32px; font-family:"Inter",sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:2px; transition:all .3s; display:inline-block; border:1px solid rgba(255,255,255,.3); color:var(--fg); }
+  .btn:hover { background:var(--fg); color:var(--bg); }
+  .btn.filled { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .hero-scroll { position:absolute; bottom:40px; right:64px; font-size:10px; text-transform:uppercase; letter-spacing:3px; color:var(--muted); z-index:2; writing-mode:vertical-rl; }
+
+  .menu { padding:120px 64px; }
+  .menu-header { text-align:center; margin-bottom:64px; }
+  .menu-header .eyebrow { font-family:"Inter",sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--gold); margin-bottom:16px; }
+  .menu-header h2 { font-size:clamp(36px,5vw,64px); font-weight:400; letter-spacing:-1px; }
+  .menu-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; max-width:900px; margin:0 auto; }
+  .menu-item { padding:24px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:baseline; gap:20px; transition:padding-left .3s; }
+  .menu-item:hover { padding-left:12px; }
+  .menu-item .name { font-size:20px; font-weight:400; }
+  .menu-item .desc { color:var(--muted); font-size:13px; margin-top:4px; font-style:italic; }
+  .menu-item .price { color:var(--gold); font-size:16px; white-space:nowrap; }
+  .menu-col { padding:0 32px; }
+
+  .story { padding:120px 64px; display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .story-img { height:520px; overflow:hidden; }
+  .story-img img { transition:transform .7s; }
+  .story-img:hover img { transform:scale(1.05); }
+  .story-text h2 { font-size:clamp(32px,4vw,52px); font-weight:400; line-height:1.2; margin-bottom:24px; }
+  .story-text h2 em { font-style:italic; color:var(--accent2); }
+  .story-text p { color:var(--muted); line-height:1.8; margin-bottom:16px; }
+
+  .cta { padding:140px 64px; text-align:center; background:linear-gradient(180deg,var(--bg) 0%,var(--card) 100%); }
+  .cta h2 { font-size:clamp(48px,8vw,96px); font-weight:400; letter-spacing:-2px; margin-bottom:24px; }
+  .cta h2 span { color:var(--accent2); font-style:italic; }
+  .cta p { color:var(--muted); font-size:17px; margin-bottom:40px; }
+  .btn2 { padding:16px 40px; background:var(--accent); color:#fff; font-size:12px; text-transform:uppercase; letter-spacing:3px; font-weight:600; display:inline-block; transition:transform .2s; }
+  .btn2:hover { transform:translateY(-2px); }
+
+  footer { padding:32px 64px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s,transform .9s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .menu-grid{grid-template-columns:1fr;} .story{grid-template-columns:1fr;gap:40px;padding:80px 24px;} nav{padding:20px 24px;} .nav-links{display:none;} .hero-content{padding:0 24px;} .menu{padding:80px 24px;} }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav>
+  <div class="logo">PRIME <span>Cut</span></div>
+  <div class="nav-links">
+    <a href="#menu">Menu</a>
+    <a href="#story">About</a>
+    <a href="#contact">Reserve</a>
+  </div>
+  <a href="#contact" class="nav-cta">Reserve</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg parallax-bg">
+    <img src="https://picsum.photos/seed/steak-hero/1920/1080" alt="Steakhouse">
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Steakhouse · NYC</div>
+    <h1>Prime cuts, <span class="it">perfectly grilled.</span></h1>
+    <p class="hero-sub">Dry-aged steaks, classic cocktails, and an unforgettable dining experience.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn filled">Reserve a table</a>
+      <a href="#menu" class="btn">View menu</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu-header reveal">
+    <div class="eyebrow">The Menu</div>
+    <h2>From the grill</h2>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-col">
+      <div class="menu-item reveal"><div><div class="name">Filet Mignon (8oz)</div><div class="desc">Center cut, béarnaise, asparagus</div></div><div class="price">$52</div></div>
+      <div class="menu-item reveal"><div><div class="name">Ribeye (16oz)</div><div class="desc">Bone-in, garlic butter, fries</div></div><div class="price">$48</div></div>
+      <div class="menu-item reveal"><div><div class="name">New York Strip (12oz)</div><div class="desc">Peppercorn crust, red wine reduction</div></div><div class="price">$44</div></div>
+      <div class="menu-item reveal"><div><div class="name">Tomahawk (32oz)</div><div class="desc">For two, chimichurri, roasted vegetables</div></div><div class="price">$95</div></div>
+    </div>
+    <div class="menu-col">
+      <div class="menu-item reveal"><div><div class="name">Wedge Salad</div><div class="desc">Iceberg, bacon, blue cheese, tomato</div></div><div class="price">$14</div></div>
+      <div class="menu-item reveal"><div><div class="name">Lobster Mac</div><div class="desc">Cavatappi, gruyère, lobster chunks</div></div><div class="price">$28</div></div>
+      <div class="menu-item reveal"><div><div class="name">Creamed Spinach</div><div class="desc">Classic steakhouse side</div></div><div class="price">$12</div></div>
+      <div class="menu-item reveal"><div><div class="name">Chocolate Lava Cake</div><div class="desc">Warm chocolate, vanilla ice cream</div></div><div class="price">$14</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="story">
+  <div class="story-img reveal-left">
+    <img src="https://picsum.photos/seed/steak-story/800/700" alt="Steak">
+  </div>
+  <div class="story-text reveal-right">
+    <h2>Dry-aged to <em>perfection.</em></h2>
+    <p>Our steaks are dry-aged in-house for 28 days, developing deep, complex flavors. We source only the finest USDA Prime beef.</p>
+    <p>Every cut is hand-selected and grilled over hardwood charcoal for that perfect sear.</p>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2 class="reveal">Reserve your <span>table.</span></h2>
+  <p class="reveal">Open daily · 5:00 PM – 11:00 PM · Reservations recommended</p>
+  <a href="tel:+12125550166" class="btn2 reveal">+1 (212) 555-0166</a>
+</section>
+
+<footer>
+  <div>© 2026 Prime Cut Steakhouse. All rights reserved.</div>
+  <div>42 Main St, New York · (212) 555-0166 · hello@primecut.com</div>
+</footer>
+
+<script>
+const heroBg=document.querySelector('.hero-bg');
+window.addEventListener('scroll',()=>{const y=window.scrollY;if(heroBg)heroBg.style.transform=`translateY(${y*.4}px)`;},{passive:true});
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

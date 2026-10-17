@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brew & Co — Coffee Shop</title>
+<style>
+  :root { --bg:#1a1208; --fg:#f5e9d3; --muted:#b8a88a; --accent:#d4a574; --accent2:#8b5e3c; --card:#2a1f14; --line:#3a3028; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { font-family:"Inter", -apple-system, sans-serif; background:var(--bg); color:var(--fg); overflow-x:hidden; }
+  img { display:block; width:100%; height:100%; object-fit:cover; }
+  a { color:inherit; text-decoration:none; }
+
+  nav { position:sticky; top:0; z-index:100; padding:16px 48px; display:flex; justify-content:space-between; align-items:center; background:rgba(26,18,8,.9); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .logo { font-weight:700; font-size:20px; letter-spacing:1px; }
+  .logo span { color:var(--accent); }
+  .nav-links { display:flex; gap:32px; font-size:13px; }
+  .nav-links a { color:var(--muted); transition:color .2s; }
+  .nav-links a:hover { color:var(--fg); }
+  .nav-cta { background:var(--accent); color:var(--bg); padding:10px 20px; font-size:13px; font-weight:600; border-radius:4px; }
+
+  .hero { min-height:90vh; position:relative; display:flex; align-items:center; padding:0 48px; overflow:hidden; }
+  .hero-bg { position:absolute; inset:0; opacity:.3; }
+  .hero-bg img { filter:brightness(.5) saturate(1.2); }
+  .hero-content { position:relative; z-index:2; max-width:600px; }
+  .hero-eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:4px; color:var(--accent); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(40px,6vw,72px); font-weight:700; line-height:1.1; letter-spacing:-1.5px; margin-bottom:20px; }
+  .hero h1 span { color:var(--accent); }
+  .hero p { color:var(--muted); font-size:17px; margin-bottom:32px; line-height:1.6; }
+  .hero-cta { display:flex; gap:16px; flex-wrap:wrap; }
+  .btn { padding:14px 28px; font-size:14px; font-weight:600; border-radius:4px; transition:all .2s; display:inline-block; }
+  .btn.primary { background:var(--accent); color:var(--bg); }
+  .btn.primary:hover { background:#c4956a; }
+  .btn.ghost { border:1px solid var(--muted); color:var(--fg); }
+  .btn.ghost:hover { border-color:var(--fg); }
+
+  .menu { padding:100px 48px; }
+  .menu-header { text-align:center; margin-bottom:56px; }
+  .menu-header .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:3px; color:var(--accent); margin-bottom:12px; }
+  .menu-header h2 { font-size:clamp(32px,4vw,48px); font-weight:700; letter-spacing:-1px; }
+  .menu-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  .menu-item { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:24px; transition:transform .3s,border-color .3s; }
+  .menu-item:hover { transform:translateY(-4px); border-color:var(--accent); }
+  .menu-item h3 { font-size:17px; font-weight:600; margin-bottom:6px; }
+  .menu-item p { color:var(--muted); font-size:13px; line-height:1.5; margin-bottom:12px; }
+  .menu-item .price { color:var(--accent); font-size:16px; font-weight:700; }
+
+  .about { padding:100px 48px; background:var(--card); }
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+  .about-img { height:420px; border-radius:8px; overflow:hidden; }
+  .about-img img { transition:transform .7s; }
+  .about-img:hover img { transform:scale(1.05); }
+  .about-text h2 { font-size:clamp(30px,4vw,48px); font-weight:700; letter-spacing:-1px; margin-bottom:20px; }
+  .about-text h2 span { color:var(--accent); }
+  .about-text p { color:var(--muted); line-height:1.7; margin-bottom:16px; }
+
+  .cta { padding:100px 48px; text-align:center; background:var(--accent); color:var(--bg); }
+  .cta h2 { font-size:clamp(32px,5vw,48px); font-weight:700; margin-bottom:16px; }
+  .cta p { opacity:.9; margin-bottom:32px; }
+  .cta .btn { background:var(--bg); color:var(--accent); padding:14px 32px; font-weight:600; border-radius:4px; display:inline-block; }
+
+  footer { padding:32px 48px; border-top:1px solid var(--line); display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .8s,transform .8s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  @media(max-width:900px){ .menu-grid{grid-template-columns:1fr;} .about-grid{grid-template-columns:1fr;gap:40px;} nav{padding:16px 24px;} .nav-links{display:none;} .hero{padding:0 24px;} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BREW <span>& Co</span></div>
+  <div class="nav-links">
+    <a href="#menu">Menu</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="#contact" class="nav-cta">Visit us</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"><img src="https://picsum.photos/seed/coffee-hero/1920/1080" alt="Coffee"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Specialty Coffee · NYC</div>
+    <h1>Brewed with <span>passion.</span></h1>
+    <p>Single-origin beans, expertly roasted. A neighborhood coffee shop with a focus on quality and community.</p>
+    <div class="hero-cta">
+      <a href="#menu" class="btn primary">View menu</a>
+      <a href="#about" class="btn ghost">Our story</a>
+    </div>
+  </div>
+</section>
+
+<section class="menu" id="menu">
+  <div class="menu-header reveal">
+    <div class="eyebrow">The Menu</div>
+    <h2>Coffee & More</h2>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-item reveal"><h3>Espresso</h3><p>Single shot, double shot, or ristretto.</p><div class="price">$3.50</div></div>
+    <div class="menu-item reveal"><h3>Latte</h3><p>Espresso with steamed milk and microfoam.</p><div class="price">$5.00</div></div>
+    <div class="menu-item reveal"><h3>Cappuccino</h3><p>Equal parts espresso, steamed milk, foam.</p><div class="price">$4.50</div></div>
+    <div class="menu-item reveal"><h3>Cold Brew</h3><p>Slow-steeped for 18 hours. Smooth and bold.</p><div class="price">$5.50</div></div>
+    <div class="menu-item reveal"><h3>Pour Over</h3><p>Hand-poured, single origin. Ask about today's bean.</p><div class="price">$6.00</div></div>
+    <div class="menu-item reveal"><h3>Matcha Latte</h3><p>Ceremonial grade matcha with oat milk.</p><div class="price">$5.50</div></div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="about-img"><img src="https://picsum.photos/seed/coffee-about/800/600" alt="Coffee"></div>
+  <div class="about-text">
+    <h2>Our <span>story.</span></h2>
+    <p>Brew & Co started as a passion project. We source beans directly from farmers and roast in small batches.</p>
+    <p>Every cup is crafted with care. We believe great coffee brings people together.</p>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <h2>Come say hello.</h2>
+  <p>Open daily 7 AM - 7 PM. Walk-ins welcome.</p>
+  <a href="tel:+15551234567" class="btn">Call us</a>
+</section>
+
+<footer>
+  <div>© 2026 Brew & Co. All rights reserved.</div>
+  <div>123 Main St · (555) 123-4567 · hello@brewco.com</div>
+</footer>
+
+<script>
+const heroBg=document.querySelector('.hero-bg');
+window.addEventListener('scroll',()=>{const y=window.scrollY;if(heroBg)heroBg.style.transform=`translateY(${y*.3}px)`;},{passive:true});
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
